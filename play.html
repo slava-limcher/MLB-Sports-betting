@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>BarBoards Live Odds — MLB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Game Day Squares palette */
+  --primary:#2e8b57; --primary-dark:#1f6b41; --accent:#FFD700; --accent-dark:#e3ab00; --cream:#fff7e8;
+  --card:#152232; --line:#2c4660; --ink:#e9eef5; --ink2:#9fb2c4; --mut:#8aa0b6;
+  --grn:#37b24d; --red:#FF5500; --gold:#FFD700; --acc:#00F2FF;
+  --away:#3a6df0; --home:#e8553e;
+  /* legacy surface names remapped to the squares card system */
+  --bg:#0c1322; --bg2:#1b2433; --panel:#1b2433; --panel2:#222d3f;
+  --shadow:0 16px 40px rgba(0,0,0,.5);
+  --display:"Oswald","Fredoka",system-ui,sans-serif; --body:"Nunito",system-ui,"Segoe UI",sans-serif;
+  /* dark-blue gradient background */
+  --field:radial-gradient(120% 85% at 50% -15%,#22354c 0%,transparent 55%),
+    linear-gradient(160deg,#1A2636 0%,#11192a 50%,#0B111E 100%);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--field);color:var(--ink);font-family:var(--body);
+  min-height:100%;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none}
+.hidden{display:none!important}
+.wrap{max-width:1280px;margin:0 auto;padding:16px}
+
+/* ---------- shared bits ---------- */
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;letter-spacing:.5px;
+  color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.brand .dot{width:13px;height:13px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent)}
+.brand small{font-family:var(--body);font-weight:800;color:var(--cream);letter-spacing:2px;font-size:11px}
+.btn{font-family:var(--display);font-weight:600;color:#5a3d00;font-size:17px;padding:13px 22px;border-radius:16px;
+  background:linear-gradient(180deg,#ffe89a,var(--accent) 55%,var(--accent-dark));
+  box-shadow:0 5px 0 rgba(0,0,0,.2);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.btn.alt{background:#2c3a4f;color:var(--ink);box-shadow:0 4px 0 rgba(0,0,0,.35)} .btn.alt:active{box-shadow:0 1px 0 rgba(0,0,0,.35)}
+.btn.gold{background:linear-gradient(180deg,#ffe89a,var(--accent) 55%,var(--accent-dark));color:#5a3d00}
+.btn.primary{background:linear-gradient(180deg,#5fcf86,var(--primary) 60%,var(--primary-dark));color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.25)}
+.btn.sm{font-size:14px;padding:9px 15px;border-radius:12px;box-shadow:0 4px 0 rgba(0,0,0,.28)} .btn.sm:active{box-shadow:0 1px 0 rgba(0,0,0,.28)}
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;transform:none}
+.card{background:var(--card);border:none;border-radius:22px;padding:20px;box-shadow:var(--shadow)}
+.muted{color:var(--mut)}
+.pill{display:inline-block;background:#2c3a4f;border:none;border-radius:999px;
+  padding:4px 12px;font-size:12px;color:var(--ink2);font-weight:800}
+input{font-family:inherit}
+.txt{background:#10151f;border:2px solid var(--line);color:var(--ink);border-radius:12px;
+  padding:12px 14px;font-size:15px;width:100%;font-weight:700}
+.txt:focus{outline:none;border-color:var(--primary)}
+
+/* ---------- SETUP (host) ---------- */
+#setup .hero{text-align:center;padding:26px 10px 8px}
+#setup h1{font-size:34px;margin:8px 0 4px;letter-spacing:1px}
+#setup .tag{color:var(--ink2);margin-bottom:18px}
+.gamelist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:14px}
+.gcard{cursor:pointer;border:1px solid var(--line);background:linear-gradient(180deg,#0f1d2e,#0b1521);
+  border-radius:14px;padding:14px;transition:.15s;position:relative}
+.gcard:hover{border-color:var(--acc);transform:translateY(-2px)}
+.gcard .teams{font-weight:800;font-size:17px;display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+.gcard .vs{color:var(--mut);font-weight:600;margin:0 4px}
+.gcard .glg{width:22px;height:22px;object-fit:contain}
+.gcard .meta{color:var(--ink2);font-size:13px;margin-top:6px;display:flex;justify-content:space-between}
+.statedot{font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px}
+.s-pre{background:#16314e;color:#8fc0ff}
+.s-live{background:#163a2b;color:#5bf0a7}
+.s-final{background:#2b2f3a;color:#a9b6cc}
+.keyrow{display:flex;gap:8px;align-items:center;margin-top:16px;flex-wrap:wrap;justify-content:center}
+
+/* shared section heading + error (used by setup/phone too) */
+.sec-h{font-size:clamp(10px,.95vw,13px);letter-spacing:2px;font-weight:800;color:var(--mut);margin:0 0 10px}
+.err{color:var(--red);font-weight:700}
+
+/* ---------- TV (broadcast, full-screen 16:9; sized for 10ft+ legibility) ---------- */
+#tv{position:fixed;inset:0;display:flex;flex-direction:column;
+  padding:clamp(8px,1.1vh,16px);gap:clamp(4px,.7vh,10px);overflow:hidden;
+  --awC:#2f81f7; --hmC:#f7b32f;
+  background:var(--field)}
+#tv .sec-h{font-size:clamp(13px,1.7vmin,22px)}
+
+/* header */
+.tv-header{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.tv-header .brand{font-size:clamp(16px,2vmin,28px)}
+.tv-header .brand small{font-size:clamp(9px,1vmin,14px)}
+.tv-ctrls{display:flex;gap:8px;align-items:center}
+.tv-ctrls .icon{background:#13243a;border:1px solid var(--line);color:var(--ink2);border-radius:9px;
+  padding:8px 12px;font-size:clamp(11px,1.3vmin,16px);font-weight:700}
+.tv-ctrls .icon:hover{color:var(--ink);border-color:var(--acc)}
+.joinmini{display:flex;align-items:center;gap:13px;background:rgba(13,24,38,.65);border:1px solid var(--line);
+  border-radius:14px;padding:7px 14px}
+.joinmini img{width:clamp(56px,6.5vmin,88px);height:clamp(56px,6.5vmin,88px);border-radius:8px;background:#fff;padding:3px}
+.joinmini .code{font-size:clamp(24px,3.4vmin,44px);font-weight:900;letter-spacing:4px;color:var(--gold);line-height:1}
+.joinmini .lbl{font-size:clamp(9px,1.1vmin,13px);color:var(--mut);letter-spacing:1.5px;font-weight:700}
+.joinmini #joinUrl{max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:0;text-transform:none}
+.joinmini .watch{font-weight:900;color:var(--acc);font-size:clamp(18px,2.4vmin,30px);text-align:center;line-height:1}
+.joinhint{flex:0 0 auto;font-size:clamp(11px,1.3vmin,16px);color:var(--mut);margin-top:-2px}
+.joinhint:empty{display:none}
+.tverr{color:var(--red);font-weight:700;font-size:clamp(12px,1.4vmin,17px)}
+
+/* scoreboard */
+.tv-score{flex:0 0 auto;display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;border-radius:18px;
+  overflow:hidden;border:1px solid var(--line);box-shadow:0 12px 36px rgba(0,0,0,.4);
+  background:linear-gradient(90deg,color-mix(in srgb,var(--awC) 26%,#0c1726) 0%,#0c1726 30%,#0c1726 70%,color-mix(in srgb,var(--hmC) 26%,#0c1726) 100%)}
+.sb-side{display:flex;align-items:center;gap:clamp(10px,1.6vmin,22px);padding:clamp(10px,1.8vmin,26px) clamp(16px,2.4vmin,36px);min-width:0}
+.sb-side.home{flex-direction:row-reverse;text-align:right}
+.sb-badge{flex:0 0 auto;width:clamp(54px,6.5vmin,92px);height:clamp(54px,6.5vmin,92px);border-radius:16px;display:grid;
+  place-items:center;font-weight:900;font-size:clamp(20px,2.6vmin,36px);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5);
+  background:radial-gradient(circle at 50% 38%,rgba(255,255,255,.22),rgba(255,255,255,.05));
+  box-shadow:0 6px 18px rgba(0,0,0,.45),inset 0 0 0 2px rgba(255,255,255,.1)}
+.sb-logo{width:82%;height:82%;object-fit:contain;filter:drop-shadow(0 2px 5px rgba(0,0,0,.5))}
+.lgfb{font:inherit;color:inherit}
+.sb-meta{flex:1 1 auto;min-width:0}
+.sb-meta .nm{font-weight:900;font-size:clamp(26px,4vmin,58px);line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-meta .ab{color:var(--ink2);font-size:clamp(13px,1.6vmin,22px);font-weight:800;letter-spacing:1px;margin-top:3px}
+.sb-score{flex:0 0 auto;font-size:clamp(56px,9.5vmin,140px);font-weight:900;font-variant-numeric:tabular-nums;line-height:.85;margin-left:auto}
+.sb-side.home .sb-score{margin-left:0;margin-right:auto}
+.sb-center{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 clamp(12px,2.2vmin,38px);
+  min-width:clamp(120px,13vmin,210px);border-left:1px solid rgba(255,255,255,.07);border-right:1px solid rgba(255,255,255,.07)}
+.sb-center .inn{font-size:clamp(17px,2.4vmin,32px);font-weight:900;letter-spacing:1px}
+.sb-center .st{font-size:clamp(12px,1.5vmin,19px);letter-spacing:2px;font-weight:900;margin-top:8px;padding:4px 15px;border-radius:999px}
+.st.live{color:#04140c;background:var(--grn);animation:pulse 1.5s infinite}
+.st.final{color:var(--ink2);background:#1c2636}
+.st.pre{color:#06203a;background:#8fc0ff}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* win probability */
+.tv-wp{flex:0 0 auto}
+.tv-wp .lab{display:flex;justify-content:space-between;align-items:center;font-size:clamp(15px,2.2vmin,28px);
+  color:var(--ink2);font-weight:800;margin-bottom:6px}
+.tv-wp .lab .mid{letter-spacing:2px;color:var(--mut);font-size:clamp(11px,1.4vmin,17px)}
+.tv-wp .bar{position:relative;height:clamp(26px,3.6vmin,48px);border-radius:14px;overflow:hidden;display:flex;
+  border:3px solid rgba(255,255,255,.42);background:#0a1626}
+.tv-wp .away{background:linear-gradient(90deg,color-mix(in srgb,var(--awC) 55%,#1d61ff),var(--awC));transition:width .9s cubic-bezier(.4,0,.2,1)}
+.tv-wp .home{background:linear-gradient(270deg,color-mix(in srgb,var(--hmC) 55%,#f0982f),var(--hmC));transition:width .9s cubic-bezier(.4,0,.2,1)}
+.tv-wp .bar::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.16) 50%,transparent 65%);background-size:220% 100%;animation:shine 3.8s linear infinite}
+@keyframes shine{0%{background-position:220% 0}100%{background-position:-220% 0}}
+
+/* body grid: odds + leaderboard */
+.tv-body{flex:1 1 auto;display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(8px,1.2vmin,16px);min-height:0}
+.tv-panel{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:16px;
+  padding:clamp(12px,1.6vmin,22px);display:flex;flex-direction:column;min-height:0;overflow:hidden}
+
+/* odds board */
+.odds-board{flex:1 1 auto;display:flex;flex-direction:column;gap:clamp(6px,1vmin,14px);min-height:0}
+.mkt{flex:1 1 0;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(4px,.7vmin,8px)}
+.mkt-top{display:flex;justify-content:space-between;align-items:baseline}
+.mkt-top .nm{font-weight:900;font-size:clamp(17px,2.3vmin,30px);letter-spacing:.4px}
+.mkt-top .vend{color:var(--mut);font-size:clamp(11px,1.4vmin,17px);font-weight:700;text-transform:capitalize}
+.mkt-cells{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,1.2vmin,14px)}
+.ocell{position:relative;display:flex;justify-content:space-between;align-items:center;background:#0b1726;
+  border:1px solid var(--line);border-radius:12px;padding:clamp(7px,1.1vmin,14px) clamp(14px,1.9vmin,26px);overflow:hidden}
+.ocell .side{font-weight:800;color:var(--ink2);font-size:clamp(15px,2vmin,26px)}
+.ocell .num{font-weight:900;font-variant-numeric:tabular-nums;font-size:clamp(24px,3.4vmin,46px);display:flex;align-items:center;gap:6px}
+.ocell .num .arr{font-size:.55em}
+.num.pos{color:var(--grn)} .num.neg{color:var(--ink)}
+.arr.up{color:var(--grn)} .arr.dn{color:var(--red)}
+@keyframes flashUp{0%{background:rgba(46,194,126,.5)}100%{background:transparent}}
+@keyframes flashDn{0%{background:rgba(255,90,106,.5)}100%{background:transparent}}
+.ocell.fu{animation:flashUp 1.2s ease-out} .ocell.fd{animation:flashDn 1.2s ease-out}
+.pbar{height:clamp(9px,1.3vmin,16px);border-radius:999px;overflow:hidden;display:flex;background:#0a1626;border:1px solid var(--line);margin-top:2px}
+.pbar .pl{background:var(--awC);transition:width .6s} .pbar .pr{background:var(--hmC);transition:width .6s}
+.plab{display:flex;justify-content:space-between;font-size:clamp(11px,1.4vmin,17px);color:var(--mut);margin-top:3px;font-weight:700}
+.consensus-empty{font-size:clamp(11px,1.4vmin,17px);color:var(--mut);text-align:center;margin-top:1px}
+
+/* leaderboard */
+.lb{display:flex;flex-direction:column;gap:clamp(7px,1.1vmin,12px);flex:1 1 auto;min-height:0}
+.champ{flex:0 0 auto;display:flex;align-items:center;gap:14px;border-radius:14px;padding:clamp(11px,1.6vmin,20px);
+  background:linear-gradient(120deg,rgba(255,212,94,.18),rgba(255,212,94,.03));border:1px solid rgba(255,212,94,.42)}
+.champ .av{flex:0 0 auto;width:clamp(48px,5.6vmin,76px);height:clamp(48px,5.6vmin,76px);border-radius:50%;display:grid;
+  place-items:center;font-weight:900;color:#fff;font-size:clamp(18px,2.3vmin,30px);text-shadow:0 1px 2px rgba(0,0,0,.5);box-shadow:0 0 0 3px rgba(255,212,94,.5)}
+.champ .info{flex:1 1 auto;min-width:0}
+.champ .nm{font-weight:900;font-size:clamp(19px,2.5vmin,32px);display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.champ .sub{font-size:clamp(12px,1.5vmin,19px);color:var(--gold);font-weight:800;letter-spacing:.5px;margin-top:2px}
+.champ .bal{flex:0 0 auto;font-weight:900;font-size:clamp(22px,2.8vmin,36px);text-align:right;font-variant-numeric:tabular-nums}
+.lb-list{display:flex;flex-direction:column;gap:clamp(6px,.9vmin,10px);overflow-y:auto;min-height:0;padding-right:3px}
+.lb-row{display:grid;grid-template-columns:auto auto 1fr auto;gap:12px;align-items:center;background:#0b1726;
+  border:1px solid var(--line);border-radius:11px;padding:clamp(8px,1.1vmin,14px) clamp(10px,1.4vmin,18px)}
+.lb-row .rk{font-weight:900;color:var(--mut);font-size:clamp(16px,2vmin,26px);min-width:1.5em;text-align:center}
+.lb-row .av{width:clamp(34px,3.6vmin,48px);height:clamp(34px,3.6vmin,48px);border-radius:50%;display:grid;place-items:center;
+  font-weight:900;color:#fff;font-size:clamp(13px,1.6vmin,20px);text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.lb-row .who{font-weight:800;font-size:clamp(16px,2vmin,26px);display:flex;align-items:center;gap:7px;min-width:0;overflow:hidden}
+.lb-row .who .nme{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-row .who .tag{flex:0 0 auto;font-size:clamp(11px,1.3vmin,15px);color:var(--mut);font-weight:700}
+.lb-row .bal{font-weight:900;font-variant-numeric:tabular-nums;font-size:clamp(16px,2vmin,26px);text-align:right;white-space:nowrap}
+.bal.up{color:var(--grn)} .bal.dn{color:var(--red)}
+.lb-row .bal .net{font-size:.68em;font-weight:800;color:var(--mut)}
+.lb-empty{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  color:var(--mut);font-size:clamp(16px,2vmin,26px);gap:10px}
+
+/* big JOIN / QR block (top of right rail) */
+.rail{gap:0}
+.joinbig{flex:0 0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:clamp(14px,2.2vmin,30px);
+  background:#0b1726;border:1px solid var(--line);border-radius:16px;padding:clamp(12px,1.8vmin,22px);
+  margin-bottom:clamp(10px,1.4vmin,16px)}
+.jb-qr{flex:0 0 auto;background:#fff;border-radius:14px;padding:clamp(8px,1.1vmin,15px);line-height:0;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.jb-qr img{display:block;width:clamp(170px,24vmin,300px);height:clamp(170px,24vmin,300px);image-rendering:pixelated}
+.jb-info{flex:1 1 200px;min-width:0;text-align:center}
+.jb-lead{font-size:clamp(13px,1.7vmin,22px);letter-spacing:2px;font-weight:800;color:var(--ink2)}
+.jb-code{font-family:var(--display);font-weight:700;font-size:clamp(44px,7.5vmin,104px);letter-spacing:6px;
+  color:var(--gold);line-height:1;margin:clamp(4px,.9vmin,12px) 0}
+.jb-watch{font-weight:900;font-size:clamp(20px,2.6vmin,34px);color:var(--acc)}
+.jb-watch .jb-watchlbl{font-size:.55em;color:var(--ink2);font-weight:800;letter-spacing:1px}
+.jb-url{font-size:clamp(10px,1.2vmin,15px);color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:7px}
+.rail-ctrls{flex:0 0 auto;display:flex;gap:10px;justify-content:center;margin-bottom:clamp(6px,1vmin,12px)}
+.rail .tverr{flex:0 0 auto;display:block;text-align:center;margin-bottom:6px}
+
+/* props ticker — fixed-height auto-scrolling marquee (no manual scroll; big text) */
+.tv-props{flex:0 0 auto}
+.props{display:flex;overflow:hidden;width:100%}
+.props-track{display:flex;gap:clamp(10px,1.4vmin,18px);align-items:stretch;animation:marquee 40s linear infinite;will-change:transform}
+.props-track:hover{animation-play-state:paused}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-25%)}}
+.prop{flex:0 0 auto;background:#0b1726;border:1px solid var(--line);border-radius:12px;
+  padding:clamp(9px,1.3vmin,16px) clamp(13px,1.8vmin,24px);min-width:clamp(180px,19vmin,260px)}
+.prop .pn{font-weight:900;font-size:clamp(15px,2vmin,26px)}
+.prop .pl2{font-size:clamp(12px,1.5vmin,19px);color:var(--ink2)}
+.prop .po{font-weight:900;color:var(--gold);font-size:clamp(16px,2.1vmin,28px);margin-top:3px}
+@media(max-width:760px){.tv-body{grid-template-columns:1fr}}
+
+/* ---------- PHONE ---------- */
+#phone{max-width:480px;margin:0 auto;padding:14px}
+.pgate{padding:30px 8px;text-align:center}
+.pgate h1{font-size:26px;margin:10px 0 2px}
+.balbar{display:flex;justify-content:space-between;align-items:center;background:var(--panel);
+  border:1px solid var(--line);border-radius:14px;padding:11px 15px;margin-bottom:12px;position:sticky;top:8px;z-index:5}
+.balbar .bk{font-size:24px;font-weight:900;color:var(--gold);font-variant-numeric:tabular-nums}
+.balbar .rk{text-align:right;font-size:12px;color:var(--ink2)}
+.teamsel{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.tsel{border:2px solid var(--line);background:#0b1726;border-radius:14px;padding:18px 10px;text-align:center;font-weight:800}
+.tsel.sel{border-color:var(--acc);background:#0e2233}
+.tsel .b2{width:52px;height:52px;border-radius:12px;margin:0 auto 8px;display:grid;place-items:center;font-weight:900;color:var(--ink);
+  background:radial-gradient(circle at 50% 38%,rgba(255,255,255,.16),rgba(255,255,255,.04))}
+.tsel .b2 .logo{width:74%;height:74%;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+.miniscore .logo{width:18px;height:18px;object-fit:contain;vertical-align:-4px;margin-right:3px}
+.miniscore{display:flex;justify-content:space-between;align-items:center;background:var(--panel);
+  border:1px solid var(--line);border-radius:12px;padding:8px 14px;margin-bottom:10px;font-weight:800}
+.miniscore .sc{font-size:22px;font-variant-numeric:tabular-nums}
+.miniscore .inn{font-size:11px;color:var(--ink2);text-align:center}
+.betblock{margin-bottom:14px}
+.betblock h3{font-size:13px;letter-spacing:1px;color:var(--mut);margin:0 0 7px}
+.betbtn{width:100%;display:flex;justify-content:space-between;align-items:center;background:#0b1726;
+  border:1px solid var(--line);border-radius:11px;padding:12px 14px;color:var(--ink);font-weight:800;margin-bottom:7px}
+.betbtn:active{transform:translateY(1px)}
+.betbtn.sel{border-color:var(--acc);background:#0e2233}
+.betbtn .o{font-weight:900;font-variant-numeric:tabular-nums}
+.betbtn .o.pos{color:var(--grn)} .betbtn .o.gold{color:var(--gold)}
+.stakebar{position:sticky;bottom:0;background:linear-gradient(0deg,var(--bg) 60%,transparent);padding:12px 0 14px;margin-top:8px}
+.stakerow{display:flex;gap:7px;margin-bottom:9px}
+.chip{flex:1;background:#0b1726;border:1px solid var(--line);border-radius:10px;padding:10px 0;text-align:center;font-weight:800;color:var(--ink2)}
+.chip.sel{border-color:var(--gold);color:var(--gold);background:#1a1605}
+.slip{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:9px;font-size:13px}
+.slip .row{display:flex;justify-content:space-between;margin:3px 0}
+.mybets{margin-top:18px}
+.mybet{display:flex;justify-content:space-between;align-items:center;background:#0b1726;border:1px solid var(--line);
+  border-radius:10px;padding:9px 12px;margin-bottom:6px;font-size:13px}
+.mybet .res{font-weight:900}
+.res.win{color:var(--grn)} .res.loss{color:var(--red)} .res.open{color:var(--gold)} .res.push{color:var(--ink2)}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#0e2233;border:1px solid var(--acc);
+  color:var(--ink);padding:11px 18px;border-radius:12px;font-weight:800;z-index:50;opacity:0;transition:.25s;pointer-events:none}
+.toast.show{opacity:1;bottom:104px}
+
+/* ============ NEON / CYBER THEME (TV board) ============ */
+#tv{--neon:#00F2FF}
+#tv .sec-h{color:#7fd8ff;text-shadow:0 0 10px rgba(60,190,255,.3)}
+.tv-header .brand{text-shadow:0 0 14px rgba(60,190,255,.35)}
+/* metallic medallion team badges */
+.sb-badge{position:relative;border-radius:50%;
+  background:radial-gradient(circle at 50% 34%,#2a3a52,#0b1421 72%);
+  box-shadow:0 0 0 2px rgba(130,180,220,.55),0 0 0 5px rgba(12,21,34,.95),0 0 0 6px rgba(150,200,240,.25),
+    0 8px 22px rgba(0,0,0,.55),inset 0 2px 6px rgba(255,255,255,.14)}
+.sb-badge::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  background:linear-gradient(150deg,rgba(255,255,255,.30),transparent 46%)}
+.sb-logo{position:relative;z-index:1}
+.tv-score{box-shadow:0 0 0 1px rgba(120,170,210,.18),0 12px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06)}
+
+/* glowing metallic odds cells with corner brackets */
+.ocell{background:linear-gradient(180deg,#16273e,#0c1726);border:1px solid rgba(80,190,255,.45);border-radius:14px;
+  box-shadow:0 0 18px rgba(40,170,255,.12),inset 0 1px 0 rgba(255,255,255,.07),inset 0 0 22px rgba(20,90,150,.18)}
+.ocell::before,.ocell::after{content:"";position:absolute;width:11px;height:11px;pointer-events:none;opacity:.7}
+.ocell::before{left:7px;top:7px;border-left:2px solid #5ad2ff;border-top:2px solid #5ad2ff;border-radius:3px 0 0 0}
+.ocell::after{right:7px;bottom:7px;border-right:2px solid #5ad2ff;border-bottom:2px solid #5ad2ff;border-radius:0 0 3px 0}
+.mkt-top .nm{text-shadow:0 0 12px rgba(60,190,255,.25)}
+
+/* electric win-probability bar */
+.tv-wp .bar{border:2px solid rgba(150,210,255,.5);box-shadow:0 0 22px rgba(40,160,255,.35),inset 0 0 18px rgba(0,0,0,.5)}
+.tv-wp .away{background:linear-gradient(90deg,#0a4a7a,#36c9ff);box-shadow:0 0 24px rgba(54,201,255,.55)}
+.tv-wp .home{background:linear-gradient(270deg,#7a2a0a,#ff7a2f);box-shadow:0 0 24px rgba(255,122,47,.5)}
+.wp-bolt{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+.wp-bolt polyline{fill:none;stroke-width:2.2;opacity:0;animation:boltflick 1.5s steps(1,end) infinite}
+.wp-bolt .b1{stroke:#d8f4ff;filter:drop-shadow(0 0 4px #36c9ff)}
+.wp-bolt .b2{stroke:#ffe6cf;filter:drop-shadow(0 0 4px #ff7a2f);animation-delay:.75s}
+@keyframes boltflick{0%,100%{opacity:0}5%{opacity:.95}9%{opacity:.15}13%{opacity:.8}19%{opacity:0}}
+
+/* circuit-board QR frame */
+.joinbig{position:relative;border:1px solid rgba(80,190,255,.45);
+  background:radial-gradient(120% 100% at 50% 0%,rgba(40,120,180,.18),transparent 60%),linear-gradient(180deg,#0d1c2e,#0a1422);
+  box-shadow:0 0 26px rgba(40,160,255,.18),inset 0 0 26px rgba(20,90,150,.15)}
+.joinbig::before,.joinbig::after{content:"";position:absolute;width:22px;height:22px;border:2px solid rgba(90,210,255,.75);pointer-events:none}
+.joinbig::before{left:10px;top:10px;border-right:none;border-bottom:none;border-radius:5px 0 0 0}
+.joinbig::after{right:10px;bottom:10px;border-left:none;border-top:none;border-radius:0 0 5px 0}
+.jb-qr{box-shadow:0 0 0 2px rgba(90,210,255,.5),0 0 26px rgba(40,160,255,.5)}
+.jb-lead{color:var(--neon);text-shadow:0 0 10px rgba(60,190,255,.4)}
+.jb-code{text-shadow:0 0 20px rgba(255,210,70,.5)}
+
+/* neon leaderboard */
+.champ{box-shadow:0 0 22px rgba(255,210,90,.18),inset 0 0 18px rgba(255,200,60,.06)}
+.champ .av{box-shadow:0 0 0 3px rgba(255,212,94,.5),0 0 18px rgba(255,200,60,.45)}
+.lb-row{background:linear-gradient(180deg,#13243a,#0c1726);border-color:rgba(80,160,220,.28)}
+.lb-row .av{box-shadow:0 0 12px rgba(60,190,255,.4)}
+
+/* prop cards: logo chip + glow */
+.prop{display:flex;align-items:center;gap:clamp(8px,1.2vmin,14px);
+  background:linear-gradient(180deg,#13243a,#0b1626);border:1px solid rgba(80,190,255,.4);
+  box-shadow:0 0 16px rgba(40,160,255,.12),inset 0 1px 0 rgba(255,255,255,.06)}
+.prop-chip{flex:0 0 auto;width:clamp(36px,4.2vmin,54px);height:clamp(36px,4.2vmin,54px);border-radius:50%;
+  object-fit:contain;padding:5px;background:radial-gradient(circle,#1b2c44,#0a1320);
+  box-shadow:0 0 0 2px rgba(90,210,255,.5),0 0 14px rgba(40,160,255,.4)}
+.prop-chip.pcfb{display:grid;place-items:center;font-weight:900;color:#cfeaff;font-size:clamp(12px,1.5vmin,18px);padding:0}
+.prop .pinfo{min-width:0}
+.prop .po{text-shadow:0 0 10px rgba(255,210,70,.4)}
+
+/* ===== NEON v2 — closer match to the mockup ===== */
+/* brushed-metal glowing plates */
+.tv-panel,.joinbig{
+  background:
+    linear-gradient(180deg,rgba(150,200,240,.06),transparent 20%),
+    repeating-linear-gradient(118deg,rgba(255,255,255,.012) 0 2px,transparent 2px 6px),
+    linear-gradient(158deg,#16273f 0%,#0e1c2e 46%,#0a1422 100%);
+  border:1px solid rgba(95,205,255,.42);
+  box-shadow:0 0 0 1px rgba(8,16,28,.85),0 0 32px rgba(40,150,230,.14),inset 0 1px 0 rgba(185,225,255,.12),inset 0 0 46px rgba(18,78,138,.13)}
+/* odds cells: smooth glowing pills, no corner brackets */
+.ocell::before,.ocell::after{display:none!important}
+.ocell{background:linear-gradient(180deg,#1b2f4a,#0d1a2b);border:1px solid rgba(100,210,255,.55);border-radius:16px;
+  box-shadow:0 0 18px rgba(45,165,255,.2),inset 0 1px 0 rgba(195,235,255,.2),inset 0 -12px 26px rgba(8,36,66,.55)}
+.ocell .side{color:#8fd6ff;text-shadow:0 0 8px rgba(70,190,255,.3)}
+/* chrome medallion badges */
+.sb-badge{background:radial-gradient(circle at 50% 30%,#3c5172,#0b1421 76%);
+  box-shadow:0 0 0 2px #9bc0e0,0 0 0 4px #182636,0 0 0 7px #6f93b5,0 0 0 8px #0b1420,
+    0 8px 24px rgba(0,0,0,.6),inset 0 3px 9px rgba(255,255,255,.28),inset 0 -7px 13px rgba(0,0,0,.55)}
+/* score tiles */
+.sb-score{background:linear-gradient(180deg,rgba(22,44,72,.55),rgba(8,18,32,.55));
+  border:1px solid rgba(125,175,215,.28);border-radius:14px;
+  padding:clamp(2px,.5vmin,6px) clamp(10px,1.5vmin,20px);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 4px 14px rgba(0,0,0,.4)}
+/* hotter plasma beam */
+.tv-wp .bar{box-shadow:0 0 30px rgba(45,170,255,.45),0 0 30px rgba(255,120,50,.25),inset 0 0 18px rgba(0,0,0,.5)}
+.wp-bolt polyline{stroke-width:2.6;animation:boltflick 1.6s steps(1,end) infinite}
+.wp-bolt .core{stroke:#ffffff;stroke-width:2.4;opacity:.55;filter:drop-shadow(0 0 7px #bfe9ff);animation:none}
+.wp-bolt .b3{stroke:#cfecff;filter:drop-shadow(0 0 5px #36c9ff);animation-delay:1.05s}
+@keyframes boltflick{0%,100%{opacity:.25}5%{opacity:1}10%{opacity:.4}15%{opacity:.9}22%{opacity:.3}}
+/* QR panel faint circuit traces */
+.joinbig{background:
+  repeating-linear-gradient(90deg,rgba(70,190,255,.05) 0 1px,transparent 1px 46px),
+  repeating-linear-gradient(0deg,rgba(70,190,255,.05) 0 1px,transparent 1px 46px),
+  radial-gradient(120% 100% at 50% 0%,rgba(40,120,180,.16),transparent 60%),
+  linear-gradient(180deg,#0d1c2e,#0a1422)}
+/* leaderboard glow trophy accent in the header */
+.rail .sec-h{color:#7fd8ff;text-shadow:0 0 12px rgba(60,190,255,.45)}
+
+/* ===== NEON v3 — vivid plasma + brighter pop (match mockup glow) ===== */
+.tv-wp .bar{height:clamp(30px,4vmin,52px);border:2px solid rgba(175,228,255,.65);
+  box-shadow:0 0 40px rgba(45,180,255,.55),0 0 26px rgba(255,120,50,.3),inset 0 0 22px rgba(0,0,0,.4)}
+.tv-wp .away{background:linear-gradient(90deg,#0b63a6,#46d6ff 68%,#9af0ff);
+  box-shadow:0 0 34px rgba(70,214,255,.85),inset 0 0 22px rgba(160,242,255,.55)}
+.tv-wp .home{background:linear-gradient(270deg,#a83c0e,#ff8a3a 68%,#ffc28a);
+  box-shadow:0 0 34px rgba(255,138,58,.75),inset 0 0 22px rgba(255,195,130,.5)}
+.wp-bolt polyline{stroke-width:3}
+.wp-bolt .core{stroke:#eaffff;stroke-width:3;opacity:.85;filter:drop-shadow(0 0 9px #aef0ff) drop-shadow(0 0 4px #fff)}
+.wp-bolt .b1,.wp-bolt .b3{filter:drop-shadow(0 0 8px #46d6ff)}
+.wp-bolt .b2{filter:drop-shadow(0 0 8px #ff8a3a)}
+/* odds cells pop brighter */
+.ocell{background:linear-gradient(180deg,#1d3454,#0e1d30);border:1px solid rgba(115,218,255,.7);
+  box-shadow:0 0 24px rgba(50,185,255,.3),inset 0 1px 0 rgba(205,242,255,.28),inset 0 -12px 26px rgba(8,36,66,.5)}
+.ocell .num.pos{color:#54f0a0;text-shadow:0 0 12px rgba(70,230,150,.4)}
+/* panels: brighter cyan edge */
+.tv-panel,.joinbig{border-color:rgba(115,218,255,.52);
+  box-shadow:0 0 0 1px rgba(8,16,28,.85),0 0 40px rgba(45,165,245,.2),inset 0 1px 0 rgba(190,228,255,.15),inset 0 0 48px rgba(18,80,142,.15)}
+
+/* ===== Game Day Squares theme polish (display font + chunky rounded surfaces) ===== */
+#setup h1,.sb-meta .nm,.mkt-top .nm,.champ .nm,.champ .bal,.pgate h1{font-family:var(--display);font-weight:700}
+#setup .hero{padding:30px 10px 8px}
+#setup h1{font-size:clamp(34px,5vw,54px);text-shadow:0 4px 0 rgba(0,0,0,.22);color:#fff;letter-spacing:0}
+#setup .tag{color:var(--cream);font-weight:700}
+/* chunky display numerals for scores, codes, balances, innings */
+.sb-score,.joinmini .code,.joinmini .watch,.balbar .bk,.sb-center .inn,.miniscore .sc{font-family:var(--display);font-weight:700}
+/* rounded shadowed panels (no hairline borders) */
+.tv-panel{border:none;border-radius:18px;box-shadow:var(--shadow);background:var(--card)}
+.tv-score{border:none;box-shadow:var(--shadow);border-radius:20px}
+.sb-center .st{letter-spacing:1.5px}
+/* win-probability meter: thick white border like the squares TV meter */
+.tv-wp .bar{border:3px solid rgba(255,255,255,.42);border-radius:13px}
+/* setup game cards */
+.gcard{border:2px solid var(--line);background:#1f2a3b;border-radius:16px}
+.gcard:hover{border-color:var(--primary)}
+/* inset surfaces -> squares row color, primary-green selection, gold stake chips */
+.ocell,.lb-row,.mybet{background:#1f2a3b}
+.ocell{border-radius:12px}
+.tsel{border-radius:16px;background:#1f2a3b} .tsel.sel{border-color:var(--primary);background:#173a28}
+.betbtn{border-radius:14px;background:#1f2a3b} .betbtn.sel{border-color:var(--primary);background:#173a28}
+.chip{border-radius:12px;background:#1f2a3b} .chip.sel{border-color:var(--accent);color:var(--accent);background:#2c2305}
+.slip{background:#222d3f;border-color:var(--line)}
+.balbar,.miniscore{background:var(--card);border:none;box-shadow:0 8px 22px rgba(0,0,0,.4)}
+.balbar .bk,.betbtn .o.gold,.chip.sel{color:var(--accent)}
+.sec-h{color:var(--ink2)}
+/* tv header control buttons */
+.tv-ctrls .icon{background:#2c3a4f;border:none;color:var(--ink);box-shadow:0 3px 0 rgba(0,0,0,.3);font-weight:800}
+.tv-ctrls .icon:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+.stakebar{background:linear-gradient(0deg,#0c1322 55%,transparent)}
+
+/* ===== NEON FINAL — placed last so it wins over the GDS polish block ===== */
+/* metallic glowing plates (re-assert over .tv-panel{background:var(--card);border:none}) */
+/* panels = the plate's brushed-metal texture (metal.png) at FULL strength so it reads as metal;
+   only a soft edge vignette for depth/contrast — no flat scrim (the scrim killed the metallic feel) */
+/* panels: brushed-navy metal texture + soft top gloss + crisp neon border
+   (reverted from the chrome diagonal-band version) */
+.tv-panel,.joinbig{border:1px solid rgba(0,242,255,.42);
+  background:
+    repeating-linear-gradient(rgba(255,255,255,.045) 0 1px,transparent 1px 2px),
+    linear-gradient(180deg,#16323f 0%,#0a1b26 100%);
+    background-blend-mode:overlay;
+  box-shadow:0 0 3px rgba(0,242,255,.7),inset 0 0 12px rgba(0,242,255,.16),inset 0 4px 8px rgba(0,0,0,.55),0 10px 26px rgba(0,0,0,.5)}
+/* glowing pill odds cells (re-assert over .ocell{background:#1f2a3b}) */
+/* EXACT plate IMAGE as the cell background; odds numbers sit on top.
+   Drop the plate file at  mlb-betting/plate.png  (CSS gradient is just a fallback if it's missing). */
+/* plate.png IS the cell (its own gold frame + brushed teal + cyan glow); numbers sit on top */
+.ocell{position:relative;overflow:hidden;border-radius:16px;border:1px solid rgba(95,205,255,.5);
+  background:
+    linear-gradient(180deg,#1d4658 0%,#143341 70%,#0e2937 100%);
+  box-shadow:0 0 16px rgba(60,200,255,.2),inset 0 1px 0 rgba(190,235,255,.16),inset 0 -10px 22px rgba(6,22,34,.6),0 6px 16px rgba(0,0,0,.4)}
+.ocell .num .arr{display:none}   /* clean odds, no movement arrows */
+.ocell::before,.ocell::after{display:none!important}   /* the image already has the frame + sheen */
+.ocell .side,.ocell .num{position:relative;z-index:1}
+.ocell .side{color:#9fdcff;text-shadow:0 0 8px rgba(70,190,255,.35)} .ocell .num.pos{color:#54f0a0;text-shadow:0 0 12px rgba(70,230,150,.4)}
+
+/* ELECTRIC PLASMA WIN-PROBABILITY BAR */
+/* win bar fills + glow driven by the two teams' colors (--awC / --hmC), kept dim/rich */
+.tv-wp .bar{position:relative;height:clamp(30px,4vmin,52px);border-radius:14px;overflow:hidden;display:flex;isolation:isolate;border:2px solid rgba(150,200,235,.5);background:#050d16;box-shadow:0 0 24px color-mix(in srgb,var(--awC) 38%,transparent),0 0 16px color-mix(in srgb,var(--hmC) 32%,transparent),inset 0 0 28px rgba(0,0,0,.62)}
+.tv-wp .away{position:relative;background:linear-gradient(90deg,#0a3a52 0%,#1591b7 30%,#2bd0f5 62%,#4decff 92%,#cdf6ff 100%);box-shadow:0 0 28px rgba(77,236,255,.6),inset 0 0 20px rgba(0,0,0,.25);transition:width .9s cubic-bezier(.4,0,.2,1)}
+.tv-wp .home{position:relative;background:linear-gradient(270deg,#7e2a14 0%,#e25937 30%,#f56a38 62%,#fc834e 92%,#ffd0a0 100%);box-shadow:0 0 28px rgba(252,131,78,.55),inset 0 0 20px rgba(0,0,0,.25);transition:width .9s cubic-bezier(.4,0,.2,1)}
+.tv-wp .bar::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:6%;transform:translateX(-50%);z-index:3;pointer-events:none;background:radial-gradient(closest-side,rgba(215,242,255,.26),rgba(170,220,255,.1) 45%,transparent 75%);mix-blend-mode:screen;filter:blur(1px);animation:wpSeam 2.6s ease-in-out infinite}
+@keyframes wpSeam{0%,100%{opacity:.4;transform:translateX(-50%) scaleY(.9)}50%{opacity:.72;transform:translateX(-50%) scaleY(1.12)}}
+.tv-wp .bar::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(100deg,transparent 40%,rgba(255,255,255,.1) 50%,transparent 60%);background-size:240% 100%;mix-blend-mode:screen;animation:wpShine 4.2s linear infinite}
+@keyframes wpShine{0%{background-position:240% 0}100%{background-position:-240% 0}}
+.wp-bolt{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none;mix-blend-mode:screen}
+.wp-bolt .bolts{animation:wpDrift 5.5s ease-in-out infinite;transform-origin:center;will-change:transform}
+@keyframes wpDrift{0%,100%{transform:translateX(-1.2%)}50%{transform:translateX(1.2%)}}
+.wp-bolt polyline{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.wp-bolt .core{stroke:#bfeeff;stroke-width:1.5;opacity:.3;filter:drop-shadow(0 0 6px #4decff);animation:wpCore 2.4s ease-in-out infinite}
+@keyframes wpCore{0%,100%{opacity:.2;stroke-width:1.3}50%{opacity:.38;stroke-width:1.8}}
+.wp-bolt .tendril{stroke:#eafcff;stroke-width:2.1;opacity:0;animation:wpFlick 1.5s steps(1,end) infinite}
+.wp-bolt .b1{filter:drop-shadow(0 0 7px #46d6ff) drop-shadow(0 0 3px #fff);animation-delay:0s}
+.wp-bolt .b2{filter:drop-shadow(0 0 7px #6fe0ff) drop-shadow(0 0 3px #fff);animation-delay:.32s}
+.wp-bolt .b3{filter:drop-shadow(0 0 7px #ffd17a) drop-shadow(0 0 3px #fff);animation-delay:.6s;animation-duration:1.7s}
+.wp-bolt .b4{filter:drop-shadow(0 0 7px #ff8a3a) drop-shadow(0 0 3px #fff);animation-delay:.9s;animation-duration:1.8s}
+.wp-bolt .b5{stroke-width:1.6;filter:drop-shadow(0 0 6px #ff7a2f);animation-delay:1.15s;animation-duration:1.3s}
+@keyframes wpFlick{0%,100%{opacity:0}3%{opacity:1}7%{opacity:.18}11%{opacity:.92}16%{opacity:.3}20%{opacity:0}55%{opacity:0}58%{opacity:.7}61%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.tv-wp .bar::after,.tv-wp .bar::before,.wp-bolt .bolts,.wp-bolt .core,.wp-bolt .tendril{animation:none}.wp-bolt .tendril{opacity:.5}}
+
+/* SCOREBOARD premium finish */
+.tv-score .sb-side{position:relative;isolation:isolate;background:transparent}
+.tv-score .sb-side::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(120% 150% at 0% 50%,color-mix(in srgb,var(--awC) 70%,transparent) 0%,color-mix(in srgb,var(--awC) 34%,transparent) 26%,color-mix(in srgb,var(--awC) 10%,transparent) 52%,transparent 74%),linear-gradient(90deg,color-mix(in srgb,var(--awC) 42%,#0b1525) 0%,color-mix(in srgb,var(--awC) 14%,#0b1525) 34%,#0b1525 78%)}
+.tv-score .sb-side.home::before{background:radial-gradient(120% 150% at 100% 50%,color-mix(in srgb,var(--hmC) 70%,transparent) 0%,color-mix(in srgb,var(--hmC) 34%,transparent) 26%,color-mix(in srgb,var(--hmC) 10%,transparent) 52%,transparent 74%),linear-gradient(270deg,color-mix(in srgb,var(--hmC) 42%,#0b1525) 0%,color-mix(in srgb,var(--hmC) 14%,#0b1525) 34%,#0b1525 78%)}
+.tv-score .sb-side::after{content:"";position:absolute;left:0;right:0;top:0;height:2px;z-index:1;pointer-events:none;background:linear-gradient(90deg,color-mix(in srgb,var(--awC) 90%,#fff) 0%,transparent 70%);opacity:.7}
+.tv-score .sb-side.home::after{background:linear-gradient(270deg,color-mix(in srgb,var(--hmC) 90%,#fff) 0%,transparent 70%)}
+.tv-score{background:linear-gradient(90deg,#0a1422 0%,#0b1626 50%,#0a1422 100%);box-shadow:0 0 0 1px rgba(120,170,210,.22),inset 0 1px 0 rgba(255,255,255,.07),inset 22px 0 60px -28px color-mix(in srgb,var(--awC) 80%,transparent),inset -22px 0 60px -28px color-mix(in srgb,var(--hmC) 80%,transparent),0 14px 44px rgba(0,0,0,.55)}
+.tv-score .sb-badge{border-radius:50%;background:radial-gradient(circle at 50% 22%,rgba(255,255,255,.55),rgba(255,255,255,0) 40%),radial-gradient(circle at 50% 116%,rgba(0,0,0,.55),rgba(0,0,0,0) 46%),radial-gradient(circle at 50% 38%,#46597a 0%,#27374f 46%,#0c1626 78%);box-shadow:0 0 0 2px #cfe2f4,0 0 0 4px #21344b,0 0 0 7px #7d9fc2,0 0 0 9px #b9d6ee,0 0 0 11px #0a1320,0 0 0 12px color-mix(in srgb,var(--awC) 60%,transparent),0 12px 28px rgba(0,0,0,.6),inset 0 4px 10px rgba(255,255,255,.34),inset 0 -9px 16px rgba(0,0,0,.6),inset 0 0 14px color-mix(in srgb,var(--awC) 45%,transparent)}
+.tv-score .sb-side.home .sb-badge{box-shadow:0 0 0 2px #cfe2f4,0 0 0 4px #21344b,0 0 0 7px #7d9fc2,0 0 0 9px #b9d6ee,0 0 0 11px #0a1320,0 0 0 12px color-mix(in srgb,var(--hmC) 60%,transparent),0 12px 28px rgba(0,0,0,.6),inset 0 4px 10px rgba(255,255,255,.34),inset 0 -9px 16px rgba(0,0,0,.6),inset 0 0 14px color-mix(in srgb,var(--hmC) 45%,transparent)}
+.tv-score .sb-badge::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;background:radial-gradient(60% 42% at 38% 24%,rgba(255,255,255,.65),rgba(255,255,255,0) 60%),linear-gradient(152deg,rgba(255,255,255,.30) 0%,rgba(255,255,255,0) 44%);mix-blend-mode:screen}
+.tv-score .sb-logo{position:relative;z-index:1}
+.tv-score .sb-score{position:relative;border-radius:16px;padding:clamp(4px,.7vmin,10px) clamp(12px,1.8vmin,26px);color:#f2f8ff;background:linear-gradient(180deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 14%),linear-gradient(180deg,#1d3450 0%,#142a44 38%,#0a1929 100%);border:1px solid rgba(150,205,245,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.30),inset 0 2px 10px rgba(190,225,255,.14),inset 0 -14px 28px rgba(4,14,26,.7),0 0 0 1px rgba(8,16,28,.7),0 10px 24px rgba(0,0,0,.5),0 0 26px color-mix(in srgb,var(--awC) 32%,transparent);text-shadow:0 2px 4px rgba(0,0,0,.55),0 0 18px color-mix(in srgb,var(--awC) 45%,transparent)}
+.tv-score .sb-side.home .sb-score{box-shadow:inset 0 1px 0 rgba(255,255,255,.30),inset 0 2px 10px rgba(190,225,255,.14),inset 0 -14px 28px rgba(4,14,26,.7),0 0 0 1px rgba(8,16,28,.7),0 10px 24px rgba(0,0,0,.5),0 0 26px color-mix(in srgb,var(--hmC) 32%,transparent);text-shadow:0 2px 4px rgba(0,0,0,.55),0 0 18px color-mix(in srgb,var(--hmC) 45%,transparent)}
+.tv-score .sb-score::before{content:"";position:absolute;left:6%;right:6%;top:3px;height:32%;border-radius:12px 12px 60% 60%/12px 12px 26px 26px;background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0));pointer-events:none}
+
+/* prop headshot chips + leaderboard trophy */
+.prop-chip.headshot{padding:0;object-fit:cover;background:radial-gradient(circle,#26405e,#0a1320)}
+.lb-trophy{width:clamp(120px,17vmin,210px);filter:drop-shadow(0 0 18px rgba(54,201,255,.5))}
+.lb-trophy svg{width:100%;height:auto;display:block}
+.lb-trophy img,.lb-trophy-side img{width:100%;height:auto;display:block;mix-blend-mode:screen;filter:drop-shadow(0 0 16px rgba(54,201,255,.45))}
+
+/* leaderboard: trophy beside the ranked entries (like the mockup) */
+.lb-wrap{display:flex;gap:clamp(10px,1.4vmin,18px);align-items:stretch;flex:1 1 auto;min-height:0}
+.lb-entries{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:clamp(7px,1.1vmin,12px);min-height:0}
+.lb-trophy-side{flex:0 0 auto;width:clamp(96px,12vmin,168px);align-self:center;filter:drop-shadow(0 0 18px rgba(54,201,255,.5))}
+.lb-trophy-side svg{width:100%;height:auto;display:block}
+
+/* cooler QR box: scanning beam + glowing animated brackets + pulsing join code */
+.jb-qr{position:relative;overflow:hidden}
+.jb-qr::after{content:"";position:absolute;left:0;right:0;height:16%;top:-16%;pointer-events:none;z-index:2;
+  background:linear-gradient(180deg,transparent,rgba(40,200,255,.5),transparent);box-shadow:0 0 18px rgba(40,200,255,.8);animation:qrscan 2.6s linear infinite}
+@keyframes qrscan{0%{top:-16%}100%{top:108%}}
+.joinbig::before,.joinbig::after{border-color:rgba(125,228,255,.95);animation:brkpulse 2.4s ease-in-out infinite}
+@keyframes brkpulse{0%,100%{opacity:.7;filter:drop-shadow(0 0 2px rgba(60,200,255,.45))}50%{opacity:1;filter:drop-shadow(0 0 9px rgba(60,200,255,.9))}}
+.jb-lead{text-shadow:0 0 14px rgba(60,200,255,.6)}
+.jb-code{animation:codeglow 2.6s ease-in-out infinite}
+@keyframes codeglow{0%,100%{text-shadow:0 0 18px rgba(255,210,70,.45)}50%{text-shadow:0 0 30px rgba(255,210,70,.85),0 0 10px rgba(255,170,40,.6)}}
+@media (prefers-reduced-motion:reduce){.jb-qr::after,.joinbig::before,.joinbig::after,.jb-code{animation:none}}
+
+/* ===== FULL-IMAGE BACKDROP MODE (user choice) — active when <body class="imgbg"> =====
+   Save the mockup as  mlb-betting/board-bg.png . The image becomes the board background and
+   our live values overlay it. Toggle off by removing the 'imgbg' class on <body>. */
+body.imgbg #tv{background:url("board-bg.png") center/100% 100% no-repeat,#070d16!important}
+body.imgbg .tv-score,body.imgbg .tv-panel,body.imgbg .joinbig,body.imgbg .ocell,
+body.imgbg .champ,body.imgbg .lb-row,body.imgbg .prop{background:transparent!important;border:none!important;box-shadow:none!important}
+body.imgbg .tv-wp .bar,body.imgbg .tv-wp .away,body.imgbg .tv-wp .home{background:transparent!important;border:none!important;box-shadow:none!important}
+body.imgbg .wp-bolt,body.imgbg .lb-trophy,body.imgbg .lb-trophy-side{display:none!important}
+body.imgbg .sb-badge{background:transparent!important;box-shadow:none!important}
+body.imgbg .ocell .num .arr{display:none}
+
+/* QR panel: circuit/computer lines over the metal + lit-up corner brackets on the QR code */
+.joinbig{position:relative;overflow:hidden}
+.jb-circuit{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none}
+.joinbig>.jb-qr-wrap,.joinbig>.jb-info{position:relative;z-index:1}
+.jb-qr-wrap{flex:0 0 auto;position:relative}
+.jb-qr-wrap .qc{position:absolute;width:clamp(20px,2.4vmin,30px);height:clamp(20px,2.4vmin,30px);
+  border:3px solid #5cd6ff;box-shadow:0 0 10px rgba(60,200,255,.85);pointer-events:none;z-index:3}
+.jb-qr-wrap .qc.tl{top:-7px;left:-7px;border-right:none;border-bottom:none;border-radius:7px 0 0 0}
+.jb-qr-wrap .qc.tr{top:-7px;right:-7px;border-left:none;border-bottom:none;border-radius:0 7px 0 0}
+.jb-qr-wrap .qc.bl{bottom:-7px;left:-7px;border-right:none;border-top:none;border-radius:0 0 0 7px}
+.jb-qr-wrap .qc.br{bottom:-7px;right:-7px;border-left:none;border-top:none;border-radius:0 0 7px 0}
+
+/* ============ GAMIFIED AMBIENT ANIMATIONS ============ */
+/* 1) win-prob fills: crackling-energy brightness pulse (over the lightning tendrils) */
+.tv-wp .away{animation:none}
+.tv-wp .home{animation:none}
+@keyframes wpEnergyA{0%,100%{filter:brightness(.96) saturate(1)}50%{filter:brightness(1.08) saturate(1.08)}}
+@keyframes wpEnergyH{0%,100%{filter:brightness(.96) saturate(1)}50%{filter:brightness(1.08) saturate(1.08)}}
+
+/* 2) holographic trophy: gentle float + rotating blue glow beneath */
+.lb-trophy,.lb-trophy-side{position:relative;animation:trophyFloat 3.4s ease-in-out infinite}
+.lb-trophy::before,.lb-trophy-side::before{content:"";position:absolute;left:50%;bottom:-3%;width:86%;height:44%;
+  transform:translateX(-50%);z-index:-1;border-radius:50%;filter:blur(11px);
+  background:conic-gradient(from 0deg,rgba(0,242,255,0),rgba(0,242,255,.42) 25%,rgba(0,242,255,0) 50%,rgba(0,242,255,.42) 75%,rgba(0,242,255,0));
+  animation:trophySpin 6s linear infinite}
+@keyframes trophyFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes trophySpin{to{transform:translateX(-50%) rotate(360deg)}}
+
+/* 3) odds flash = green(shortening)/red(lengthening) BORDER glow — keeps the plate background intact */
+@keyframes flashUp{0%{box-shadow:0 0 0 2px #2bff9d,0 0 30px rgba(43,255,157,.9),0 6px 16px rgba(0,0,0,.45)}100%{box-shadow:0 0 22px rgba(0,242,255,.28),0 6px 16px rgba(0,0,0,.45)}}
+@keyframes flashDn{0%{box-shadow:0 0 0 2px #FF5500,0 0 30px rgba(255,85,0,.9),0 6px 16px rgba(0,0,0,.45)}100%{box-shadow:0 0 22px rgba(0,242,255,.28),0 6px 16px rgba(0,0,0,.45)}}
+
+/* 4) betting card hover: crisp lift + brighter neon border */
+.ocell{transition:transform .12s ease,box-shadow .12s ease;cursor:pointer}
+.ocell:hover{transform:translateY(-2px);box-shadow:0 0 0 1px #00F2FF,0 0 36px rgba(0,242,255,.55),0 10px 22px rgba(0,0,0,.5)}
+
+/* 5) QR corner brackets: targeting-reticle pulse (inward/outward) */
+.jb-qr-wrap .qc.tl{animation:qcTL 1.9s ease-in-out infinite}
+.jb-qr-wrap .qc.tr{animation:qcTR 1.9s ease-in-out infinite}
+.jb-qr-wrap .qc.bl{animation:qcBL 1.9s ease-in-out infinite}
+.jb-qr-wrap .qc.br{animation:qcBR 1.9s ease-in-out infinite}
+@keyframes qcTL{0%,100%{transform:translate(0,0)}50%{transform:translate(5px,5px)}}
+@keyframes qcTR{0%,100%{transform:translate(0,0)}50%{transform:translate(-5px,5px)}}
+@keyframes qcBL{0%,100%{transform:translate(0,0)}50%{transform:translate(5px,-5px)}}
+@keyframes qcBR{0%,100%{transform:translate(0,0)}50%{transform:translate(-5px,-5px)}}
+
+/* 6) WAEX code: breathing metallic sheen sweeping left->right (+ existing gold glow) */
+.jb-code{background:linear-gradient(100deg,#FFD700 0%,#FFD700 38%,#fff6c2 50%,#FFD700 62%,#FFD700 100%);
+  background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:waexSheen 3s linear infinite,codeglow 2.6s ease-in-out infinite}
+@keyframes waexSheen{0%{background-position:210% 0}100%{background-position:-60% 0}}
+
+/* 7) player-props carousel: pause on hover + scale/glow the hovered card */
+.props-track:hover{animation-play-state:paused}
+.prop{transition:transform .15s ease,box-shadow .15s ease;cursor:pointer}
+.prop:hover{transform:scale(1.05);box-shadow:0 0 0 1px #00F2FF,0 0 26px rgba(0,242,255,.5);position:relative;z-index:2}
+
+@media (prefers-reduced-motion:reduce){
+  .tv-wp .away,.tv-wp .home,.lb-trophy,.lb-trophy-side,.lb-trophy::before,.lb-trophy-side::before,
+  .jb-qr-wrap .qc.tl,.jb-qr-wrap .qc.tr,.jb-qr-wrap .qc.bl,.jb-qr-wrap .qc.br,.jb-code{animation:none}
+}
+
+/* odds numbers pop off the metal plates (spec: text-shadow on bold odds) */
+.ocell .num{text-shadow:0 2px 3px rgba(0,0,0,.65),0 0 8px rgba(0,242,255,.22);letter-spacing:.5px}
+.ocell .num.pos{text-shadow:0 2px 3px rgba(0,0,0,.65),0 0 10px rgba(55,230,140,.4)}
+/* aggressive condensed display tracking for team names / scores */
+.sb-meta .nm,.sb-score{letter-spacing:.5px}
+
+/* ============ PHONE — NEON / CYBER (match the mockup; placed last to win the cascade) ============ */
+#phone{--awC:#00e7ff;--hmC:#ff4d4d;max-width:480px;margin:0 auto;padding:14px 13px 26px}
+/* circuit-board backdrop, only while the phone view is on screen */
+body:has(#phone:not(.hidden)){background:
+  radial-gradient(120% 80% at 50% -8%,rgba(0,170,230,.18),transparent 55%),
+  radial-gradient(70% 50% at 16% 26%,rgba(0,200,255,.07),transparent 60%),
+  radial-gradient(70% 50% at 86% 70%,rgba(255,80,80,.06),transparent 60%),
+  repeating-linear-gradient(90deg,rgba(70,195,255,.05) 0 1px,transparent 1px 54px),
+  repeating-linear-gradient(0deg,rgba(70,195,255,.05) 0 1px,transparent 1px 54px),
+  linear-gradient(170deg,#0b1422 0%,#0a1018 55%,#070b13 100%) fixed}
+
+/* ---- balance bar ---- */
+#phone .balbar{background:repeating-linear-gradient(rgba(255,255,255,.045) 0 1px,transparent 1px 2px),linear-gradient(180deg,#1c2c40,#0e1a2a);background-blend-mode:overlay;border:1px solid rgba(95,205,255,.45);border-radius:14px;
+  padding:11px 16px;box-shadow:0 0 22px rgba(40,160,255,.2),inset 0 1px 0 rgba(185,225,255,.12)}
+#phone .balbar .lbl{letter-spacing:2px;color:#7fd8ff;font-weight:800;text-shadow:0 0 8px rgba(60,190,255,.4)}
+#phone .balbar .bk{font-family:var(--display);font-weight:700;font-size:28px;color:var(--gold);letter-spacing:1px;
+  text-shadow:0 0 16px rgba(255,210,70,.6),0 0 4px rgba(255,210,70,.5)}
+#phone .balbar .rk{color:#8fb6d6;font-weight:700;display:flex;flex-direction:column;align-items:flex-end;line-height:1.25}
+#phone .balbar .bal-cur{font-family:var(--display);font-weight:700;font-size:26px;color:var(--gold);line-height:1.05;text-shadow:0 0 12px rgba(255,210,70,.5)}
+#phone .balbar .rk .muted{color:#6f93b5}
+
+/* ---- team header: medallions + cyan/red split + circuit traces ---- */
+#phone .miniscore{position:relative;overflow:hidden;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;
+  border-radius:16px;padding:12px;margin-bottom:10px;border:1px solid rgba(110,210,255,.5);
+  background:
+    repeating-linear-gradient(rgba(255,255,255,.045) 0 1px,transparent 1px 2px),
+    repeating-linear-gradient(90deg,rgba(70,195,255,.05) 0 1px,transparent 1px 30px),
+    radial-gradient(120% 130% at 0% 50%,color-mix(in srgb,var(--awC) 26%,transparent),transparent 52%),
+    radial-gradient(120% 130% at 100% 50%,color-mix(in srgb,var(--hmC) 24%,transparent),transparent 52%),
+    linear-gradient(180deg,#12243b,#0a1525);
+  box-shadow:0 0 0 1px rgba(8,16,28,.8),0 0 26px rgba(40,160,255,.2),
+    inset 22px 0 50px -30px color-mix(in srgb,var(--awC) 85%,transparent),
+    inset -22px 0 50px -30px color-mix(in srgb,var(--hmC) 85%,transparent)}
+#phone .ms-team{display:flex;align-items:center;gap:9px;min-width:0}
+#phone .ms-team.away{justify-content:flex-start}
+#phone .ms-team.home{justify-content:flex-end}
+#phone .ms-badge{flex:0 0 auto;position:relative;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 50% 28%,#46597a,#0c1626 78%);
+  box-shadow:0 0 0 2px #cfe2f4,0 0 0 4px #21344b,0 0 0 6px #6f93b5,0 4px 12px rgba(0,0,0,.55),inset 0 2px 6px rgba(255,255,255,.25)}
+#phone .ms-logo{width:78%;height:78%;object-fit:contain;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
+#phone .ms-ab{font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:.5px;color:#eaf6ff}
+#phone .ms-team .sc{font-family:var(--display);font-weight:700;font-size:30px;font-variant-numeric:tabular-nums;line-height:1}
+#phone .ms-team.away .sc{color:var(--awC);text-shadow:0 0 14px color-mix(in srgb,var(--awC) 70%,transparent)}
+#phone .ms-team.home .sc{color:var(--hmC);text-shadow:0 0 14px color-mix(in srgb,var(--hmC) 70%,transparent)}
+#phone .miniscore .inn{text-align:center;min-width:88px;padding:6px 10px;border-radius:10px;line-height:1.15;
+  background:rgba(8,18,32,.6);border:1px solid rgba(95,205,255,.3)}
+#phone .miniscore #msInn{display:block;font-family:var(--display);font-weight:700;font-size:13px;color:#cfe8ff;letter-spacing:.5px}
+#phone .miniscore #msSt{display:block;font-size:10px;letter-spacing:2px;font-weight:800;color:#7fd8ff;text-transform:uppercase;margin-top:2px}
+
+/* ---- energy win-probability bar ---- */
+#phone .pwp{margin:0 0 12px}
+#phone .pwp-lab{display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:800;color:#8fb6d6;letter-spacing:.5px;margin-bottom:4px}
+#phone .pwp-lab .pwp-mid{letter-spacing:2px;color:#6f93b5;font-size:9px}
+#phone .pwp-bar{position:relative;height:16px;border-radius:9px;overflow:hidden;display:flex;isolation:isolate;
+  border:2px solid rgba(150,200,235,.5);background:#050d16;
+  box-shadow:0 0 18px color-mix(in srgb,var(--awC) 38%,transparent),0 0 14px color-mix(in srgb,var(--hmC) 30%,transparent),inset 0 0 16px rgba(0,0,0,.6)}
+#phone .pwp-away{background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0) 55%,rgba(0,0,0,.3)),linear-gradient(90deg,color-mix(in srgb,var(--awC) 88%,#000),var(--awC) 45%,color-mix(in srgb,var(--awC) 42%,#ffffff) 88%,#eef6ff);
+  box-shadow:0 0 16px color-mix(in srgb,var(--awC) 55%,transparent);transition:width .9s cubic-bezier(.4,0,.2,1)}
+#phone .pwp-home{background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0) 55%,rgba(0,0,0,.3)),linear-gradient(270deg,color-mix(in srgb,var(--hmC) 88%,#000),var(--hmC) 45%,color-mix(in srgb,var(--hmC) 42%,#ffffff) 88%,#ffeef0);
+  box-shadow:0 0 16px color-mix(in srgb,var(--hmC) 55%,transparent);transition:width .9s cubic-bezier(.4,0,.2,1)}
+#phone .pwp-bar::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:8%;transform:translateX(-50%);z-index:3;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(225,245,255,.6),transparent 75%);mix-blend-mode:screen;filter:blur(1px);animation:pwpSeam 2.6s ease-in-out infinite}
+@keyframes pwpSeam{0%,100%{opacity:.4}50%{opacity:.8}}
+#phone .pwp-bar::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(100deg,transparent 40%,rgba(255,255,255,.14) 50%,transparent 60%);background-size:240% 100%;mix-blend-mode:screen;animation:pwpShine 4.2s linear infinite}
+@keyframes pwpShine{0%{background-position:240% 0}100%{background-position:-240% 0}}
+
+/* ---- section titles ---- */
+#phone .betblock{margin-bottom:13px}
+#phone .betblock h3{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:2px;color:#8fd6ff;
+  text-shadow:0 0 10px rgba(60,190,255,.35);margin:0 0 8px;padding-left:2px}
+
+/* ---- bet rows ---- */
+#phone .betbtn{background:repeating-linear-gradient(rgba(255,255,255,.045) 0 1px,transparent 1px 2px),linear-gradient(180deg,#1c2c40,#0e1a2a);background-blend-mode:overlay;border:1px solid rgba(95,205,255,.42);border-radius:13px;
+  padding:11px 13px;margin-bottom:8px;color:#eaf6ff;font-weight:800;
+  box-shadow:0 0 14px rgba(40,160,255,.12),inset 0 1px 0 rgba(185,225,255,.08);
+  transition:transform .1s ease,box-shadow .12s ease,border-color .12s ease}
+#phone .betbtn:active{transform:translateY(1px)}
+#phone .betbtn.sel{border-color:#00f2ff;background:linear-gradient(180deg,#173a52,#0c2236);
+  box-shadow:0 0 0 1px #00f2ff,0 0 22px rgba(0,242,255,.4),inset 0 1px 0 rgba(185,225,255,.15)}
+#phone .betbtn:disabled{opacity:.45}
+#phone .betbtn .t{display:flex;align-items:center;gap:9px;min-width:0;font-size:16px}
+#phone .bl-logo{width:26px;height:26px;object-fit:contain;flex:0 0 auto;filter:drop-shadow(0 0 4px rgba(60,190,255,.4))}
+#phone .bl-nm{font-family:var(--display);font-weight:700;letter-spacing:.4px;white-space:nowrap}
+
+/* ---- odds capsules: green=positive, blue=negative, gold=prop ---- */
+#phone .betbtn .o{font-family:var(--display);font-weight:700;font-size:17px;font-variant-numeric:tabular-nums;
+  min-width:64px;text-align:center;padding:6px 12px;border-radius:10px;border:1px solid transparent;line-height:1;flex:0 0 auto}
+#phone .betbtn .o.pos{color:#54f0a0;border-color:rgba(84,240,160,.7);background:rgba(20,60,42,.5);
+  box-shadow:0 0 12px rgba(70,230,150,.4),inset 0 0 10px rgba(70,230,150,.12);text-shadow:0 0 8px rgba(70,230,150,.5)}
+#phone .betbtn .o.neg{color:#5cd6ff;border-color:rgba(92,214,255,.7);background:rgba(14,44,66,.5);
+  box-shadow:0 0 12px rgba(60,200,255,.4),inset 0 0 10px rgba(60,200,255,.12);text-shadow:0 0 8px rgba(60,200,255,.5)}
+#phone .betbtn .o.gold{color:#ffe066;border-color:rgba(255,210,70,.75);background:rgba(58,46,8,.5);
+  box-shadow:0 0 12px rgba(255,210,70,.4),inset 0 0 10px rgba(255,210,70,.12);text-shadow:0 0 8px rgba(255,210,70,.55)}
+
+/* ---- player-prop tiles (headshot + name/sub + gold odds) ---- */
+#phone .prop-row{align-items:center;gap:11px}
+#phone .prop-row .prop-chip{width:42px;height:42px;flex:0 0 auto}
+#phone .prop-row .t{flex:1 1 auto;flex-direction:column;align-items:flex-start;gap:2px}
+#phone .prop-row .pr-nm{font-family:var(--display);font-weight:700;font-size:16px;color:#eaf6ff;letter-spacing:.3px}
+#phone .prop-row .pr-sub{font-size:11px;font-weight:700;color:#8fb6d6;letter-spacing:.3px}
+
+/* ---- team picker ---- */
+#phone .sec-h{color:#8fd6ff;text-shadow:0 0 10px rgba(60,190,255,.3)}
+#phone .tsel{background:repeating-linear-gradient(rgba(255,255,255,.045) 0 1px,transparent 1px 2px),linear-gradient(180deg,#1c2c40,#0e1a2a);background-blend-mode:overlay;border:1px solid rgba(95,205,255,.42);border-radius:16px;
+  padding:18px 10px;color:#eaf6ff;box-shadow:0 0 14px rgba(40,160,255,.12)}
+#phone .tsel.sel{border-color:#00f2ff;background:linear-gradient(180deg,#173a52,#0c2236);box-shadow:0 0 0 1px #00f2ff,0 0 22px rgba(0,242,255,.4)}
+#phone .tsel .b2{width:54px;height:54px;border-radius:50%;background:radial-gradient(circle at 50% 28%,#46597a,#0c1626 78%);
+  box-shadow:0 0 0 2px #cfe2f4,0 0 0 4px #21344b,0 0 0 6px #6f93b5,0 4px 12px rgba(0,0,0,.5),inset 0 2px 6px rgba(255,255,255,.22)}
+
+/* ---- bet slip ---- */
+#phone .stakebar{background:linear-gradient(0deg,#070b13 62%,transparent)}
+#phone .slip{background:repeating-linear-gradient(rgba(255,255,255,.045) 0 1px,transparent 1px 2px),linear-gradient(180deg,#1c2c40,#0e1a2a);background-blend-mode:overlay;border:1px solid rgba(95,205,255,.42);border-radius:13px;
+  padding:11px 14px;font-size:14px;box-shadow:inset 0 1px 0 rgba(185,225,255,.08)}
+#phone .slip #slipDesc{font-weight:800;color:#eaf6ff}
+#phone .slip .o{font-family:var(--display);font-weight:700;color:var(--gold);text-shadow:0 0 8px rgba(255,210,70,.45)}
+#phone .slip #slipWin{color:#54f0a0;font-weight:800}
+
+/* ---- stake chips ---- */
+#phone .stakerow{gap:8px}
+#phone .chip{background:repeating-linear-gradient(rgba(255,255,255,.045) 0 1px,transparent 1px 2px),linear-gradient(180deg,#1c2c40,#0e1a2a);background-blend-mode:overlay;border:1px solid rgba(95,205,255,.42);border-radius:11px;
+  padding:11px 0;font-family:var(--display);font-weight:700;font-size:16px;color:#9fc4e0}
+#phone .chip.sel{border-color:var(--gold);color:#fff3c4;background:linear-gradient(180deg,#3a2e08,#241c04);
+  box-shadow:0 0 0 1px var(--gold),0 0 20px rgba(255,210,70,.5),inset 0 0 12px rgba(255,210,70,.2);text-shadow:0 0 10px rgba(255,210,70,.6)}
+
+/* ---- place-bet button = big neon gold ---- */
+#phone #placeBtn{font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:1px;border-radius:14px;padding:15px;
+  color:#3a2700;background:linear-gradient(180deg,#ffe89a,var(--gold) 52%,var(--accent-dark));
+  box-shadow:0 0 26px rgba(255,210,70,.5),0 6px 0 rgba(120,90,0,.4),inset 0 1px 0 rgba(255,255,255,.5)}
+#phone #placeBtn:active{transform:translateY(3px);box-shadow:0 0 22px rgba(255,210,70,.45),0 2px 0 rgba(120,90,0,.4)}
+#phone #placeBtn:disabled{background:linear-gradient(180deg,#2a3850,#1a2438);color:#6f8db0;box-shadow:0 0 0 1px rgba(95,205,255,.25);text-shadow:none}
+
+/* ---- gate / join screen ---- */
+#phone .pgate .brand{color:#eaf6ff;text-shadow:0 0 14px rgba(60,190,255,.4)}
+#phone .pgate h1{font-family:var(--display);font-weight:700;color:#fff;text-shadow:0 0 18px rgba(60,190,255,.35)}
+#phone .txt{background:#0a1422;border:2px solid rgba(95,205,255,.4);color:#eaf6ff}
+#phone .txt:focus{border-color:#00f2ff;box-shadow:0 0 16px rgba(0,242,255,.3)}
+
+/* ---- my bets ---- */
+#phone .mybet{background:repeating-linear-gradient(rgba(255,255,255,.045) 0 1px,transparent 1px 2px),linear-gradient(180deg,#1c2c40,#0e1a2a);background-blend-mode:overlay;border:1px solid rgba(95,205,255,.3);border-radius:11px;color:#cfe2f4}
+#phone .res.win{color:#54f0a0}#phone .res.loss{color:#ff6a6a}#phone .res.open{color:var(--gold)}
+
+@media (prefers-reduced-motion:reduce){#phone .pwp-bar::before,#phone .pwp-bar::after{animation:none}}
+
+/* ============ COMPUTERY: circuit-board substrate + HUD accents (last = wins) ============ */
+/* phone backdrop = glowing PCB traces over deep charcoal */
+body:has(#phone:not(.hidden)){background:
+  radial-gradient(120% 80% at 50% -8%,rgba(0,170,230,.20),transparent 55%),
+  radial-gradient(70% 50% at 14% 24%,rgba(0,210,255,.10),transparent 60%),
+  radial-gradient(70% 50% at 88% 72%,rgba(255,80,80,.06),transparent 60%),
+  
+  linear-gradient(170deg,#0a1320 0%,#0a0f18 55%,#06090f 100%) fixed}
+
+
+
+
+
+/* TV gets the same circuit substrate behind its panels */
+#tv{background:
+  radial-gradient(120% 85% at 50% -15%,rgba(34,53,76,.65),transparent 55%),
+  
+  linear-gradient(160deg,#0c1726 0%,#0a121f 50%,#070b13 100%)}
+
+/* HUD / terminal labels = monospace, tracked (no new web font; system mono) */
+#phone .balbar .lbl,#phone .betblock h3,#phone .pwp-lab,#phone .sec-h,#phone .miniscore #msSt{
+  font-family:ui-monospace,"Cascadia Mono","Consolas","DejaVu Sans Mono",monospace}
+
+/* connector corner-brackets framing the team header */
+#phone .miniscore::before,#phone .miniscore::after{content:"";position:absolute;width:14px;height:14px;z-index:2;pointer-events:none;
+  border:2px solid rgba(90,214,255,.75);filter:drop-shadow(0 0 4px rgba(60,200,255,.6))}
+#phone .miniscore::before{left:6px;top:6px;border-right:none;border-bottom:none;border-radius:5px 0 0 0}
+#phone .miniscore::after{right:6px;bottom:6px;border-left:none;border-top:none;border-radius:0 0 5px 0}
+
+/* circuit-tap bullet before each section title (a lit via + short trace) */
+#phone .betblock h3::before{content:"";display:inline-block;width:7px;height:7px;margin-right:8px;border-radius:1px;
+  background:#46d6ff;box-shadow:0 0 8px rgba(70,210,255,.9),11px 0 0 -2px rgba(70,210,255,.55);vertical-align:middle}
+
+
+
+/* ===== user-chosen brushed-metal background image (last = wins) ===== */
+#tv{background:url("bg.png") center/cover no-repeat,#0a141e}
+body:has(#phone:not(.hidden)){background:url("bg.png") center/cover no-repeat,#0a141e}
+
+/* ===== TV LAYOUT v2: full-width consensus, bigger odds, QR bottom-left, smaller props, no leaderboard ===== */
+#tv .tv-body{grid-template-columns:1fr}
+#tv .sec-h{font-size:clamp(15px,2vmin,28px)}
+.odds-board{gap:clamp(8px,1.5vmin,22px)}
+.mkt{gap:clamp(6px,1vmin,14px)}
+.mkt-top .nm{font-size:clamp(26px,3.6vmin,56px)}
+.mkt-cells{gap:clamp(10px,1.7vmin,22px)}
+.ocell{padding:clamp(10px,1.9vmin,30px) clamp(16px,2.5vmin,42px)}
+.ocell .side{font-size:clamp(22px,3vmin,46px)}
+.ocell .num{font-size:clamp(36px,5.4vmin,84px)}
+.pbar{height:clamp(12px,1.8vmin,24px)}
+.plab{font-size:clamp(15px,2vmin,28px);font-weight:800;color:#bfe3ff}
+.tv-bottom{flex:0 0 auto;display:flex;gap:clamp(8px,1.2vmin,16px);align-items:stretch;min-height:0;max-height:32vh;margin-top:clamp(6px,1vmin,12px)}
+.tv-bottom .joincol{flex:0 0 clamp(300px,30%,440px);display:flex;flex-direction:column;justify-content:center;min-width:0;align-items:center}
+.tv-bottom .joinbig{margin-bottom:clamp(6px,1vmin,10px);width:100%}
+.tv-bottom .jb-qr img{width:clamp(110px,13vmin,170px);height:clamp(110px,13vmin,170px)}
+.tv-bottom .jb-code{font-size:clamp(30px,4.6vmin,62px)}
+.tv-bottom .jb-lead{font-size:clamp(12px,1.5vmin,18px)}
+.tv-bottom .jb-watch{font-size:clamp(15px,1.9vmin,24px)}
+.tv-bottom .tv-props{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.tv-bottom .prop{min-width:clamp(140px,15vmin,205px);padding:clamp(7px,1vmin,13px) clamp(9px,1.3vmin,17px)}
+.tv-bottom .prop .pn{font-size:clamp(13px,1.6vmin,21px)}
+.tv-bottom .prop .pl2{font-size:clamp(10px,1.2vmin,15px)}
+.tv-bottom .prop .po{font-size:clamp(13px,1.7vmin,22px)}
+.tv-bottom .prop-chip{width:clamp(30px,3.4vmin,46px);height:clamp(30px,3.4vmin,46px)}
+
+/* ===== centered market titles + larger player props ===== */
+.mkt-top{display:block;position:relative;text-align:center}
+.mkt-top .nm{display:inline-block}
+.mkt-top .vend{position:absolute;right:0;top:0}
+.tv-bottom .prop{min-width:clamp(200px,21vmin,320px);padding:clamp(12px,1.8vmin,26px) clamp(15px,2.1vmin,30px);gap:clamp(10px,1.5vmin,20px)}
+.tv-bottom .prop .pn{font-size:clamp(17px,2.3vmin,34px)}
+.tv-bottom .prop .pl2{font-size:clamp(12px,1.6vmin,22px)}
+.tv-bottom .prop .po{font-size:clamp(17px,2.4vmin,34px)}
+.tv-bottom .prop-chip{width:clamp(44px,5.2vmin,78px);height:clamp(44px,5.2vmin,78px)}
+
+/* ===== fix title/box overlap: natural-height market blocks that fit 3 in the panel ===== */
+.odds-board{justify-content:space-between}
+.mkt{flex:0 0 auto;justify-content:flex-start;gap:clamp(4px,0.8vmin,10px)}
+.mkt-top{margin-bottom:clamp(3px,0.6vmin,8px)}
+.mkt-top .nm{font-size:clamp(20px,2.9vmin,46px)}
+.ocell{padding:clamp(8px,1.4vmin,22px) clamp(16px,2.4vmin,40px)}
+.ocell .side{font-size:clamp(18px,2.5vmin,40px)}
+.ocell .num{font-size:clamp(28px,4.2vmin,66px)}
+.pbar{height:clamp(10px,1.5vmin,20px)}
+.plab{font-size:clamp(13px,1.8vmin,24px)}
+.tv-bottom{max-height:26vh}
+
+/* ===== fit markets to panel (v5): trim so 3 markets fit without clipping ===== */
+.tv-bottom{max-height:24vh}
+.odds-board{gap:clamp(3px,0.7vmin,12px)}
+.mkt{gap:clamp(2px,0.5vmin,6px)}
+.mkt-top{margin-bottom:clamp(1px,0.3vmin,5px)}
+.mkt-top .nm{font-size:clamp(18px,2.5vmin,42px)}
+.ocell{padding:clamp(6px,1vmin,16px) clamp(14px,2.2vmin,38px)}
+.ocell .num{font-size:clamp(24px,3.6vmin,56px)}
+.ocell .side{font-size:clamp(16px,2.3vmin,36px)}
+.pbar{height:clamp(8px,1.2vmin,16px)}
+.plab{font-size:clamp(12px,1.6vmin,20px)}
+
+/* ===== fit markets (v6): final trim so 3 fit with margin ===== */
+.tv-bottom{max-height:20vh}
+.odds-board{gap:clamp(2px,0.5vmin,9px)}
+.mkt{gap:clamp(1px,0.3vmin,4px)}
+.mkt-top{margin-bottom:clamp(0px,0.25vmin,4px)}
+.mkt-top .nm{font-size:clamp(17px,2.4vmin,40px)}
+.ocell{padding:clamp(5px,0.85vmin,14px) clamp(14px,2.2vmin,38px)}
+.ocell .num{font-size:clamp(22px,3.3vmin,52px)}
+.ocell .side{font-size:clamp(15px,2.2vmin,34px)}
+.pbar{height:clamp(7px,1vmin,14px)}
+.plab{font-size:clamp(11px,1.5vmin,19px)}
+
+/* ===== QR fills box + props fill box (v7) ===== */
+/* QR column: drop the SCAN-TO-JOIN text/code/url; big QR fills a clean square box */
+.tv-bottom .joincol{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(5px,1vmin,12px);padding:clamp(8px,1.4vmin,18px)}
+.tv-bottom .jb-info{display:none}
+.tv-bottom .jb-circuit{display:none}
+.tv-bottom .joinbig{margin:0;padding:0;border:none;background:none;box-shadow:none;flex:0 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
+.tv-bottom .joinbig::before,.tv-bottom .joinbig::after{display:none}
+.tv-bottom .jb-qr{padding:clamp(6px,1vmin,12px)}
+.tv-bottom .jb-qr img{width:clamp(120px,15.5vh,185px);height:clamp(120px,15.5vh,185px);image-rendering:pixelated}
+.tv-bottom .rail-ctrls{margin:0;flex:0 0 auto;gap:8px}
+.tv-bottom .tverr{display:none}
+/* props fill their (now wider) panel */
+.tv-bottom .tv-props .props{flex:1 1 auto;min-height:0;align-items:stretch}
+.tv-bottom .props-track{align-items:stretch}
+.tv-bottom .prop{align-items:center}
+.tv-bottom .prop-chip{width:clamp(48px,7vh,86px);height:clamp(48px,7vh,86px)}
+.tv-bottom .prop .pn{font-size:clamp(16px,2.4vh,32px)}
+.tv-bottom .prop .pl2{font-size:clamp(11px,1.7vh,21px)}
+.tv-bottom .prop .po{font-size:clamp(16px,2.5vh,34px)}
+
+/* ===== bigger boxes, no consensus (v8): drop % + Fanduel, enlarge odds + win prob ===== */
+.consensus-empty,.pbar,.plab{display:none}
+.mkt-top .vend{display:none}
+/* bigger win probability bar + percentages */
+.tv-wp .lab{font-size:clamp(20px,3vmin,44px);margin-bottom:clamp(4px,0.9vmin,12px)}
+.tv-wp .lab .mid{font-size:clamp(12px,1.7vmin,22px)}
+.tv-wp .bar{height:clamp(40px,5.4vmin,78px)}
+/* bigger odds boxes (room freed by removing consensus) */
+.mkt{gap:clamp(4px,0.9vmin,12px)}
+.mkt-top .nm{font-size:clamp(22px,3.3vmin,52px)}
+.ocell{padding:clamp(14px,2.3vmin,36px) clamp(18px,2.6vmin,42px)}
+.ocell .side{font-size:clamp(20px,3vmin,48px)}
+.ocell .num{font-size:clamp(30px,4.9vmin,84px)}
+
+/* ===== fit v9: trim box padding + bottom row so 3 big boxes fit (keeps big text + big win bar) ===== */
+.tv-bottom{max-height:18vh}
+.ocell{padding:clamp(9px,1.6vmin,26px) clamp(16px,2.5vmin,40px)}
+.mkt{gap:clamp(2px,0.6vmin,8px)}
+.mkt-top{margin-bottom:clamp(1px,0.4vmin,6px)}
+
+/* ===== clear split divider (v10): crisp glowing line at the away/home boundary ===== */
+.tv-wp .bar::before{display:none}            /* remove the misplaced center (50%) seam */
+.tv-wp .away{position:relative}
+.tv-wp .away::after{content:"";position:absolute;top:-1px;bottom:-1px;right:0;width:clamp(4px,0.6vmin,8px);transform:translateX(50%);
+  background:linear-gradient(#eafcff,#ffffff,#eafcff);border-radius:3px;z-index:9;pointer-events:none;
+  box-shadow:0 0 0 1.5px rgba(2,16,32,.6),0 0 9px #ffffff,0 0 20px rgba(120,220,255,.95),0 0 30px rgba(255,150,90,.5)}
+
+/* ===== v11: no odds title (removed from markup); the 3 markets SHARE the board height so
+   Total Runs is always fully visible; bigger QR for easy scanning ===== */
+#tv .odds-board{min-height:0;overflow:hidden;justify-content:stretch}
+#tv .mkt{flex:1 1 0;min-height:0;justify-content:center;overflow:hidden}
+#tv .ocell{padding:clamp(6px,1.3vmin,20px) clamp(16px,2.5vmin,40px)}
+/* bigger join QR (give the bottom row a touch more room so it fits) */
+#tv .tv-bottom{max-height:24vh}
+#tv .tv-bottom .jb-qr{padding:clamp(8px,1.2vmin,16px)}
+#tv .tv-bottom .jb-qr img{width:clamp(130px,18vh,210px);height:clamp(130px,18vh,210px)}
+
+/* ===== v11 any-resolution fit + buttons-to-top + bigger QR ===== */
+/* Test player / Change game -> top-right of screen */
+.tv-bottom .rail-ctrls{position:absolute;top:clamp(6px,0.9vh,14px);right:clamp(10px,1.4vw,26px);left:auto;bottom:auto;margin:0;z-index:40;display:flex;gap:8px}
+.tv-bottom .rail-ctrls .icon{font-size:clamp(11px,1.5vh,17px);padding:clamp(5px,0.8vh,10px) clamp(8px,1vw,15px)}
+.tv-bottom .joincol .tverr{display:none}
+/* bigger QR (column is QR-only now) */
+.tv-bottom{max-height:23vh}
+.tv-bottom .joincol{justify-content:center}
+.tv-bottom .jb-qr img{width:clamp(130px,20vh,260px);height:clamp(130px,20vh,260px)}
+/* ROBUST: equal-thirds markets + vh-based sizes so Total Runs always shows at any resolution */
+.odds-board{justify-content:space-between;gap:clamp(2px,0.8vh,12px)}
+.mkt{flex:1 1 0;min-height:0;overflow:hidden;justify-content:center;gap:clamp(2px,0.7vh,9px)}
+.mkt-top{margin-bottom:clamp(1px,0.5vh,7px)}
+.mkt-top .nm{font-size:clamp(18px,3.7vh,50px)}
+.ocell{padding:clamp(6px,1.5vh,26px) clamp(16px,2.5vmin,42px)}
+.ocell .side{font-size:clamp(15px,3.3vh,46px)}
+.ocell .num{font-size:clamp(20px,5.4vh,82px)}
+/* win prob (vh-based) */
+.tv-wp .bar{height:clamp(30px,4.6vh,72px)}
+.tv-wp .lab{font-size:clamp(16px,2.7vh,40px)}
+
+/* ===== v12 true-fit: natural-height markets (no overflow clip), measure-and-trim ===== */
+.mkt{flex:0 0 auto;overflow:visible;justify-content:flex-start}
+.odds-board{justify-content:space-between;gap:clamp(3px,1vh,14px)}
+
+/* ===== v13 titles-left: title beside its boxes (one row each) -> frees vertical space, no overlap/clip ===== */
+.odds-board{flex-direction:column;justify-content:space-evenly;gap:clamp(6px,1.6vh,22px)}
+.mkt{flex:0 0 auto;flex-direction:row;align-items:center;overflow:visible;gap:clamp(10px,1.4vw,30px);justify-content:flex-start}
+.mkt-top{flex:0 0 clamp(120px,13.5vw,265px);display:flex;align-items:center;justify-content:flex-start;text-align:left;margin:0}
+.mkt-top .nm{font-size:clamp(17px,3.2vh,46px);white-space:nowrap;text-align:left}
+.mkt-cells{flex:1 1 auto;min-width:0}
+/* bigger boxes (room freed by the row layout) */
+.ocell{padding:clamp(10px,2.1vh,32px) clamp(16px,2.5vmin,44px)}
+.ocell .num{font-size:clamp(24px,5.6vh,86px)}
+.ocell .side{font-size:clamp(16px,3.6vh,50px)}
+/* bottom row taller + QR sized to be FULLY visible (not clipped) */
+.tv-bottom{max-height:26vh}
+.tv-bottom .joincol{overflow:visible}
+.tv-bottom .jb-qr img{width:clamp(140px,21vh,280px);height:clamp(140px,21vh,280px)}
+
+/* ===== v14 qr-contain: QR big AND fully visible (fills a square box via contain, never cut) ===== */
+.tv-bottom{flex:0 0 auto;height:26vh;max-height:26vh}
+.tv-bottom .joincol{flex:0 0 auto;width:clamp(170px,23vh,290px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:clamp(6px,1vh,14px);overflow:hidden}
+.tv-bottom .joinbig{flex:0 1 auto;min-height:0;max-width:100%;max-height:100%;display:flex;align-items:center;justify-content:center;padding:0}
+.tv-bottom .jb-qr{display:flex;align-items:center;justify-content:center;padding:clamp(4px,0.7vh,9px);max-width:100%;max-height:100%;box-sizing:border-box}
+.tv-bottom .jb-qr img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block}
+
+/* ===== v15 qr-fit: explicit QR size below row height; column hugs it; fully visible ===== */
+.tv-bottom .joincol{width:auto;overflow:visible}
+.tv-bottom .joinbig{flex:0 0 auto}
+.tv-bottom .jb-qr img{width:clamp(140px,20vh,240px);height:clamp(140px,20vh,240px);object-fit:fill;max-width:none;max-height:none}
+
+/* ===== win-prob: favored side = DEEP GREEN, underdog = DEEP RED (dynamic) ===== */
+.tv-wp .bar .away.winning,.tv-wp .bar .home.winning{box-shadow:0 0 26px rgba(30,170,80,.55),inset 0 0 20px rgba(0,0,0,.32)}
+.tv-wp .bar .away.losing,.tv-wp .bar .home.losing{box-shadow:0 0 26px rgba(200,45,45,.5),inset 0 0 20px rgba(0,0,0,.32)}
+.tv-wp .bar .away.winning{background:linear-gradient(90deg,#04240f 0%,#0a5a2c 52%,#13803a 100%)}
+.tv-wp .bar .home.winning{background:linear-gradient(270deg,#04240f 0%,#0a5a2c 52%,#13803a 100%)}
+.tv-wp .bar .away.losing{background:linear-gradient(90deg,#280606 0%,#6e1414 52%,#a01d1d 100%)}
+.tv-wp .bar .home.losing{background:linear-gradient(270deg,#280606 0%,#6e1414 52%,#a01d1d 100%)}
+#phone .pwp-away.winning{background:linear-gradient(90deg,#04240f,#0a5a2c 52%,#13803a)}
+#phone .pwp-home.winning{background:linear-gradient(270deg,#04240f,#0a5a2c 52%,#13803a)}
+#phone .pwp-away.losing{background:linear-gradient(90deg,#280606,#6e1414 52%,#a01d1d)}
+#phone .pwp-home.losing{background:linear-gradient(270deg,#280606,#6e1414 52%,#a01d1d)}
+/* neutral white lightning so it reads over green AND red */
+.wp-bolt .core{filter:drop-shadow(0 0 7px #ffffff) drop-shadow(0 0 3px #ffffff)}
+.wp-bolt .b1,.wp-bolt .b2,.wp-bolt .b3,.wp-bolt .b4,.wp-bolt .b5{filter:drop-shadow(0 0 6px #ffffff) drop-shadow(0 0 3px #ffffff)}
+</style>
+</head>
+<body>
+
+<!-- ============================= SETUP / HOST PICK ============================= -->
+<div id="setup" class="wrap hidden">
+  <div class="hero">
+    <div class="brand" style="justify-content:center"><span class="dot"></span>BARBOARDS <small>LIVE ODDS</small></div>
+    <h1>⚾ Bar Bets — MLB</h1>
+    <div class="tag">Pick tonight's game. Patrons join from their phones and bet fake money on live odds.</div>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <div class="sec-h" style="margin:0">GAMES</div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <button class="btn alt sm" id="dayPrev" title="Previous day">◀</button>
+        <input type="date" id="dayInput" class="txt" style="width:auto;padding:7px 10px;color-scheme:dark">
+        <button class="btn alt sm" id="dayNext" title="Next day">▶</button>
+        <button class="btn alt sm" id="dayToday">Today</button>
+        <button class="btn alt sm" id="reloadGames">↻ Refresh</button>
+        <button class="btn gold sm" id="demoBtn">▶ Demo game</button>
+      </div>
+    </div>
+    <div id="gameList" class="gamelist"></div>
+    <div id="gameMsg" class="muted" style="margin-top:12px"></div>
+    <div class="keyrow">
+      <span class="pill">live via Python backend</span>
+      <button class="btn alt sm" id="keyBtn">⚙ Backend URL</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= TV / HOST DISPLAY ============================= -->
+<div id="tv" class="hidden">
+  <div class="tv-header">
+    <div class="brand"><span class="dot"></span>BARBOARDS <small>LIVE ODDS</small></div>
+  </div>
+  <div id="joinHint" class="joinhint"></div>
+
+  <!-- broadcast scoreboard -->
+  <div class="tv-score">
+    <div class="sb-side away">
+      <div class="sb-badge" id="awBadge">A</div>
+      <div class="sb-meta"><div class="nm" id="awName">Away</div><div class="ab" id="awSub"></div></div>
+      <div class="sb-score" id="awScore">0</div>
+    </div>
+    <div class="sb-center">
+      <div class="inn" id="innTxt">—</div>
+      <div class="st pre" id="stTxt">SCHEDULED</div>
+    </div>
+    <div class="sb-side home">
+      <div class="sb-badge" id="hmBadge">H</div>
+      <div class="sb-meta"><div class="nm" id="hmName">Home</div><div class="ab" id="hmSub"></div></div>
+      <div class="sb-score" id="hmScore">0</div>
+    </div>
+  </div>
+
+  <!-- win probability -->
+  <div class="tv-wp">
+    <div class="lab"><span id="wpAwayLab">Away</span><span class="mid">WIN PROBABILITY</span><span id="wpHomeLab">Home</span></div>
+    <div class="bar"><div class="away" id="wpAway" style="width:50%"></div><div class="home" id="wpHome" style="width:50%"></div></div>
+  </div>
+
+  <!-- odds (full width) -->
+  <div class="tv-body">
+    <div class="tv-panel">
+      <div id="oddsBox" class="odds-board"></div>
+    </div>
+  </div>
+
+  <!-- bottom: QR (left) + player props (no leaderboard) -->
+  <div class="tv-bottom">
+    <div class="tv-panel joincol">
+      <div class="joinbig">
+        <img class="jb-circuit" src="circuit.svg" alt="" aria-hidden="true">
+        <div class="jb-qr-wrap">
+          <div class="jb-qr"><img id="qrImg" alt="Scan to join"></div>
+          <span class="qc tl"></span><span class="qc tr"></span><span class="qc bl"></span><span class="qc br"></span>
+        </div>
+        <div class="jb-info">
+          <div class="jb-lead">📱 SCAN TO JOIN</div>
+          <div class="jb-code" id="roomCode">····</div>
+          <div class="jb-watch"><span id="watchN">0</span><span class="jb-watchlbl"> in room</span></div>
+          <div class="jb-url" id="joinUrl"></div>
+        </div>
+      </div>
+      <div class="rail-ctrls">
+        <button class="icon" id="addPlayer">➕ Test player</button>
+        <button class="icon" id="changeGame">⇄ Change game</button>
+      </div>
+      <span class="tverr" id="tvErr"></span>
+    </div>
+    <div class="tv-panel tv-props">
+      <div class="sec-h" style="margin-bottom:8px">PLAYER PROPS</div>
+      <div id="propsBox" class="props"><span class="muted">—</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= PHONE ============================= -->
+<div id="phone" class="hidden">
+  <!-- gate -->
+  <div id="pGate" class="pgate">
+    <div class="brand" style="justify-content:center"><span class="dot"></span>BARBOARDS <small>LIVE ODDS</small></div>
+    <h1>⚾ Join the action</h1>
+    <div class="muted" id="pGateMsg" style="margin-bottom:18px">Enter your name to join.</div>
+    <input class="txt" id="pName" maxlength="16" placeholder="Your name" style="margin-bottom:12px;text-align:center">
+    <button class="btn" id="pJoinBtn" style="width:100%">Join room <span id="pCodeShow"></span></button>
+    <div class="muted" id="pStatus" style="margin-top:14px;font-size:13px"></div>
+  </div>
+
+  <!-- app -->
+  <div id="pApp" class="hidden">
+    <div class="balbar">
+      <div><div class="lbl muted" style="font-size:11px">BALANCE</div><div class="bk">$<span id="pBal">1000</span></div></div>
+      <div class="rk"><span class="bal-cur">$</span><span id="pYou"></span><span id="pRank" class="muted"></span></div>
+    </div>
+
+    <!-- team pick -->
+    <div id="pTeamPick">
+      <div class="sec-h" style="text-align:center">PICK YOUR SQUAD</div>
+      <div class="teamsel">
+        <div class="tsel" id="tselAway"><div class="b2" id="tselAwayB">A</div><div id="tselAwayN">Away</div></div>
+        <div class="tsel" id="tselHome"><div class="b2" id="tselHomeB">H</div><div id="tselHomeN">Home</div></div>
+      </div>
+      <button class="btn" id="pTeamGo" style="width:100%" disabled>Let's bet ▸</button>
+    </div>
+
+    <!-- betting -->
+    <div id="pBet" class="hidden">
+      <div class="miniscore">
+        <div class="ms-team away"><span class="ms-badge" id="msAwB"></span><span class="ms-ab" id="msAw">AWY</span><span class="sc" id="msAwS">0</span></div>
+        <div class="inn"><span id="msInn">—</span><br><span id="msSt" class="muted"></span></div>
+        <div class="ms-team home"><span class="sc" id="msHmS">0</span><span class="ms-ab" id="msHm">HOM</span><span class="ms-badge" id="msHmB"></span></div>
+      </div>
+
+      <div class="pwp" id="pwp"><div class="pwp-lab"><span id="pwpAwayLab">--</span><span class="pwp-mid">WIN PROBABILITY</span><span id="pwpHomeLab">--</span></div><div class="pwp-bar"><div class="pwp-away" id="pwpAway" style="width:50%"></div><div class="pwp-home" id="pwpHome" style="width:50%"></div></div></div>
+      <div class="betblock" id="bbML">
+        <h3>MONEYLINE</h3>
+        <button class="betbtn" data-m="moneyline" data-s="away"><span class="t"></span><span class="o"></span></button>
+        <button class="betbtn" data-m="moneyline" data-s="home"><span class="t"></span><span class="o"></span></button>
+      </div>
+      <div class="betblock" id="bbSP">
+        <h3>RUN LINE (SPREAD)</h3>
+        <button class="betbtn" data-m="spread" data-s="away"><span class="t"></span><span class="o"></span></button>
+        <button class="betbtn" data-m="spread" data-s="home"><span class="t"></span><span class="o"></span></button>
+      </div>
+      <div class="betblock" id="bbOU">
+        <h3>TOTAL RUNS</h3>
+        <button class="betbtn" data-m="over_under" data-s="over"><span class="t"></span><span class="o"></span></button>
+        <button class="betbtn" data-m="over_under" data-s="under"><span class="t"></span><span class="o"></span></button>
+      </div>
+      <div class="betblock" id="bbProp">
+        <h3>PLAYER PROPS</h3>
+        <div id="pPropList"></div>
+      </div>
+
+      <!-- bet slip / stake -->
+      <div class="stakebar" id="stakeBar">
+        <div class="slip" id="slip">
+          <div class="row"><span id="slipDesc">Tap a bet above</span><span class="o" id="slipOdds"></span></div>
+          <div class="row muted"><span>To win</span><span id="slipWin">—</span></div>
+        </div>
+        <div class="stakerow" id="chipRow"></div>
+        <button class="btn gold" id="placeBtn" style="width:100%" disabled>Place bet</button>
+      </div>
+
+      <div class="mybets">
+        <div class="sec-h">MY BETS</div>
+        <div id="myBets"><div class="muted" style="font-size:13px">No bets yet — pick one above.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ============================================================================
+   BarBoards Live Odds — standalone MLB betting game.
+   - TV/host (default): picks a live game, shows scoreboard + odds + leaderboard,
+     polls balldontlie, hosts a PeerJS room, broadcasts state to phones.
+   - Phone (?room=CODE): pick team, place fake-money bets on live odds.
+   Ported from the FastAPI BarBoards backend (room.py / models.py mechanics).
+============================================================================ */
+
+/* ---------- balldontlie (browser-direct; key in localStorage, default baked in) ---------- */
+const BDL_KEY_DEFAULT = "377cfcf9-8ed1-4638-a26a-a9da7afce212";
+const BDL = {
+  getKey(){ try{ return localStorage.getItem("bdl-key")||BDL_KEY_DEFAULT; }catch(e){ return BDL_KEY_DEFAULT; } },
+  setKey(k){ try{ localStorage.setItem("bdl-key",(k||"").trim()); }catch(e){} },
+  async req(ep, params){
+    const u = new URL("https://api.balldontlie.io/mlb/v1"+ep);
+    Object.entries(params||{}).forEach(([k,v])=>{
+      if(Array.isArray(v)) v.forEach(x=>u.searchParams.append(k+"[]",x));
+      else if(v!=null) u.searchParams.set(k,v);
+    });
+    const r = await fetch(u.toString(), {headers:{Authorization:this.getKey()}});
+    if(!r.ok){ const e=new Error("HTTP "+r.status); e.status=r.status; throw e; }
+    return r.json();
+  }
+};
+const QS=(s)=>document.querySelector(s), QSA=(s)=>document.querySelectorAll(s);
+const show=(id)=>{ ["setup","tv","phone"].forEach(x=>QS("#"+x).classList.toggle("hidden", x!==id)); };
+
+/* ---------- odds / money helpers ---------- */
+function fmtOdds(o){ if(o==null) return "—"; return o>0 ? "+"+o : ""+o; }
+function profitOn(stake, odds){ return odds>0 ? stake*odds/100 : stake*100/Math.abs(odds); }
+function impliedProb(o){ if(o==null) return null; return o>0 ? 100/(o+100) : -o/(-o+100); }
+function colorFor(name){ // deterministic team color from name
+  name=name||"?"; let h=0; for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))>>>0;
+  const hue=h%360; return "hsl("+hue+",70%,55%)";
+}
+/* Official-ish primary colors by MLB abbreviation (broadcast look); falls back to hashed color. */
+const MLB_COLORS={ARI:"#A71930",ATL:"#CE1141",BAL:"#DF4601",BOS:"#BD3039",CHC:"#0E3386",CWS:"#27251F",CHW:"#27251F",
+  CIN:"#C6011F",CLE:"#0C2340",COL:"#5A2D81",DET:"#0C2340",HOU:"#EB6E1F",KC:"#004687",LAA:"#BA0021",LAD:"#005A9C",
+  MIA:"#00A3E0",MIL:"#12284B",MIN:"#002B5C",NYM:"#FF5910",NYY:"#0C2340",OAK:"#003831",ATH:"#003831",PHI:"#E81828",
+  PIT:"#FDB827",SD:"#5C4838",SDP:"#5C4838",SF:"#FD5A1E",SFG:"#FD5A1E",SEA:"#0C2C56",STL:"#C41E3A",TB:"#092C5C",
+  TBR:"#092C5C",TEX:"#003278",TOR:"#134A8E",WSH:"#AB0003",WAS:"#AB0003"};
+function teamColor(team){ return (team&&MLB_COLORS[(team.abbr||"").toUpperCase()])||colorFor(team?team.name:"?"); }
+function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+/* Team logos from ESPN's public CDN, keyed by abbreviation (covers all sports). */
+function logoUrl(abbr,sport){ return "https://a.espncdn.com/i/teamlogos/"+(sport||"mlb")+"/500/"+String(abbr||"").toLowerCase()+".png"; }
+function logoTag(team,cls,quiet){
+  const ab=esc((team&&team.abbr)||"?");
+  // quiet=true: if the logo 404s, just remove it (abbr text already shown alongside)
+  // otherwise: replace the broken image with the abbreviation as a text fallback
+  const onerr = quiet ? "this.onerror=null;this.remove();"
+    : "this.onerror=null;var s=document.createElement('span');s.className='lgfb';s.textContent=this.alt;this.replaceWith(s);";
+  return '<img class="logo '+(cls||"")+'" src="'+logoUrl(team&&team.abbr)+'" alt="'+ab+'" onerror="'+onerr+'">';
+}
+function initials(name){ return (name||"?").trim().slice(0,2).toUpperCase(); }
+function streakBadge(s){ return s>=3?" 🔥":""; }
+function teamObj(t,fallbackName){
+  if(!t) return {id:null,name:fallbackName||"?",abbr:(fallbackName||"?").slice(0,3).toUpperCase()};
+  return {id:t.id, name:t.short_display_name||t.name||t.display_name||"?",
+          abbr:t.abbreviation||(t.name||"?").slice(0,3).toUpperCase()};
+}
+function gameState(g){ const s=(g.status||"").toUpperCase();
+  return s.indexOf("FINAL")>=0 ? "final" : (s.indexOf("PROGRESS")>=0 ? "live" : "pre"); }
+
+/* win probability: pre-game from de-vigged moneyline, in-game blended with score model */
+function computeWinProb(S){
+  const ls=S.live, od=S.odds;
+  if(ls.state==="final"){ const d=ls.home-ls.away; return d>0?0.99:(d<0?0.01:0.5); }
+  let impliedHome=0.5;
+  if(od&&od.mlHome!=null&&od.mlAway!=null){
+    const ph=impliedProb(od.mlHome), pa=impliedProb(od.mlAway);
+    if(ph&&pa) impliedHome=ph/(ph+pa);
+  }
+  if(ls.state==="pre") return impliedHome;
+  const inning=Math.max(1,ls.inning||1);
+  const inningsLeft=Math.max(0.5, 9-(inning-1));
+  const diff=ls.home-ls.away;
+  const k=0.62/Math.sqrt(inningsLeft/9);
+  const inGame=1/(1+Math.exp(-diff*k));
+  const prog=Math.min(1,(inning-1)/9 + 0.06);
+  let p=(1-prog)*impliedHome + prog*inGame;
+  return Math.max(0.02,Math.min(0.98,p));
+}
+
+/* ============================================================================
+   STATE  (authoritative on host; phones receive snapshots)
+============================================================================ */
+const START_BAL = 1000;
+let S = null;          // TV (host) normalized state, fed by the backend
+let POLL = null;       // (legacy; unused with backend transport)
+function freshState(game){
+  return {
+    kind:"bb-odds",
+    game:{ id:game.id, away:game.away, home:game.home, venue:game.venue||"" },
+    live:{ state:game.state||"pre", away:0, home:0, inning:1, winProb:0.5 },
+    odds:null,
+    props:[], _propsRaw:[],
+    popularity:{},        // server shape: { moneyline:{left_pct,left_count,right_count,...}, ... }
+    leaderboard:[],       // server array:  [{alias,balance,net,wins,losses,streak,open,badge}]
+    _clientCount:0, _user:null
+  };
+}
+
+/* popularity()/leaderboard() now just ADAPT the server-provided data, so the
+   existing TV render helpers (popBar / renderLeaderboardTV) keep working unchanged. */
+function popularity(){
+  const out={}, p=(S&&S.popularity)||{};
+  for(const mkt of ["moneyline","spread","over_under"]){
+    const v=p[mkt]; if(v) out[mkt]={ left:v.left_pct, lc:v.left_count, rc:v.right_count };
+  }
+  return out;
+}
+function leaderboard(){
+  return ((S&&S.leaderboard)||[]).map(e=>({
+    alias:e.alias, bal:e.balance, net:e.net, open:e.open,
+    wins:e.wins, losses:e.losses, streak:e.streak
+  }));
+}
+
+/* ============================================================================
+   BACKEND  (REST + WebSocket) — the Python server owns game state, bets,
+   popularity, leaderboard and settlement. This page is a thin client.
+============================================================================ */
+let API = (function(){ try{ return localStorage.getItem("bb-backend")||""; }catch(e){ return ""; } })();
+(function(){ const a=new URLSearchParams(location.search).get("api"); if(a) API=a; if(!API) API=(location.protocol.indexOf("http")===0)?location.origin:"http://localhost:8000"; API=API.replace(/\/+$/,""); })();
+const WSBASE = API.replace(/^http/,"ws");
+
+/* normalize the backend's raw vendor odds list into the shape the UI uses */
+function normOdds(rawList){
+  const rows=rawList||[]; const row=rows.find(r=>r.vendor==="fanduel")||rows[0];
+  if(!row) return null;
+  return { vendor:row.vendor,
+    mlAway:row.moneyline_away_odds, mlHome:row.moneyline_home_odds,
+    spAwayV:parseFloat(row.spread_away_value), spAwayO:row.spread_away_odds,
+    spHomeV:parseFloat(row.spread_home_value), spHomeO:row.spread_home_odds,
+    totLine:parseFloat(row.total_value), totOver:row.total_over_odds, totUnder:row.total_under_odds };
+}
+/* player-name cache for props (backend sends raw player_ids; we resolve names) */
+const PNAME={};
+async function ensureNames(ids){
+  const miss=[...new Set((ids||[]).filter(id=>id&&!(id in PNAME)))].slice(0,100);
+  if(!miss.length) return false;
+  try{ const pj=await BDL.req("/players",{player_ids:miss,per_page:100});
+    (pj.data||[]).forEach(pl=>{ PNAME[pl.id]=((pl.first_name||"")[0]?pl.first_name[0]+". ":"")+(pl.last_name||pl.full_name||pl.name||"#"+pl.id); });
+    return true;
+  }catch(e){ return false; }
+}
+function normProps(raw){
+  raw=raw||[]; const seen=new Set(), out=[];
+  for(const p of raw){ const key=p.player_id+"|"+p.prop_type; if(seen.has(key)) continue; seen.add(key);
+    out.push({ key, playerId:p.player_id, name:PNAME[p.player_id]||("#"+p.player_id),
+      prop:(p.prop_type||"").replace(/_/g," "), line:parseFloat(p.line_value),
+      odds:(p.market&&p.market.odds)!=null?p.market.odds:null });
+    if(out.length>=10) break;
+  }
+  return out;
+}
+function ingestProps(st, raw){
+  st._propsRaw=raw||[]; st.props=normProps(st._propsRaw);
+  ensureNames(st.props.map(p=>p.playerId)).then(ok=>{ if(ok){ st.props=normProps(st._propsRaw); rerender(); } });
+}
+function updateTeams(st, g){
+  if(!g) return;
+  st.game.id=g.id;
+  st.game.away=teamObj(g.away_team,g.away_team_name);
+  st.game.home=teamObj(g.home_team,g.home_team_name);
+  if(g.venue) st.game.venue=g.venue;
+  st.live.state=gameState(g);
+  st.live.away=(g.away_team_data&&g.away_team_data.runs)||0;
+  st.live.home=(g.home_team_data&&g.home_team_data.runs)||0;
+  st.live.inning=g.period||st.live.inning||1;
+}
+function applyLive(st, l){
+  if(!l) return;
+  if(l.state) st.live.state=l.state;
+  if(l.away!=null) st.live.away=l.away;
+  if(l.home!=null) st.live.home=l.home;
+  if(l.inning!=null) st.live.inning=l.inning;
+}
+/* apply one backend message to a state object (TV's S or phone's PH.state) */
+function ingestMsg(st, msg){
+  const t=msg.type, d=msg.data||{};
+  if(t==="room_state"){
+    if(d.game) updateTeams(st,d.game);
+    if(d.live && Object.keys(d.live).length) applyLive(st,d.live);
+    if("odds" in d) st.odds=normOdds(d.odds);
+    if("props" in d) ingestProps(st,d.props);
+    if("popularity" in d) st.popularity=d.popularity||{};
+    if("leaderboard" in d) st.leaderboard=d.leaderboard||[];
+    if(d.user) st._user=d.user;
+  } else if(t==="game_update"){ if(d.game) updateTeams(st,d.game); applyLive(st,d.live); }
+  else if(t==="odds_update"){ st.odds=normOdds(d.odds); }
+  else if(t==="props_update"){ ingestProps(st,d.props); }
+  else if(t==="bets_update"){ st.popularity=d.popularity||{}; }
+  else if(t==="leaderboard_update"){ st.leaderboard=d.leaderboard||[]; }
+  if(d.client_count!=null) st._clientCount=d.client_count;
+  st.live.winProb=computeWinProb(st);
+}
+function rerender(){
+  if(S && !QS("#tv").classList.contains("hidden")) renderTV();
+  if(PH.state && !QS("#phone").classList.contains("hidden")) renderPhone();
+}
+
+/* ============================================================================
+   TV RENDER
+============================================================================ */
+function renderTV(){
+  if(!S) return;
+  const g=S.game, ls=S.live;
+  const aC=teamColor(g.away), hC=teamColor(g.home), tv=QS("#tv");
+  tv.style.setProperty("--awC",aC); tv.style.setProperty("--hmC",hC);
+  QS("#awName").textContent=g.away.name; QS("#hmName").textContent=g.home.name;
+  QS("#awSub").textContent=g.away.abbr; QS("#hmSub").textContent=g.home.abbr;
+  QS("#awBadge").innerHTML=logoTag(g.away,"sb-logo"); QS("#hmBadge").innerHTML=logoTag(g.home,"sb-logo");
+  QS("#awScore").textContent=ls.away; QS("#hmScore").textContent=ls.home;
+  // inning / status
+  const stEl=QS("#stTxt");
+  if(ls.state==="live"){ QS("#innTxt").textContent="INNING "+(ls.inning||1); stEl.textContent="● LIVE"; stEl.className="st live"; }
+  else if(ls.state==="final"){ QS("#innTxt").textContent="FINAL"; stEl.textContent="GAME OVER"; stEl.className="st final"; }
+  else { QS("#innTxt").textContent="FIRST PITCH"; stEl.textContent="SCHEDULED"; stEl.className="st pre"; }
+  // win prob
+  const wpH=Math.round(ls.winProb*100), wpA=100-wpH;
+  QS("#wpAway").style.width=wpA+"%"; QS("#wpHome").style.width=wpH+"%";
+  { const _a=QS("#wpAway"),_h=QS("#wpHome"),aWin=wpA>=wpH; _a.classList.toggle("winning",aWin);_a.classList.toggle("losing",!aWin);_h.classList.toggle("winning",!aWin);_h.classList.toggle("losing",aWin); }
+  QS("#wpAwayLab").textContent=g.away.abbr+" "+wpA+"%"; QS("#wpHomeLab").textContent=wpH+"% "+g.home.abbr;
+  QS("#tvErr").textContent=S._err||"";
+  injectWpBolt();
+  renderOdds(); renderPropsTV(); resolveHeadshots();
+}
+function popBar(mkt){
+  const p=popularity()[mkt];
+  const left = p ? p.left : 50, right = 100 - left;
+  return '<div class="pbar"><div class="pl" style="width:'+left+'%"></div>'+
+    '<div class="pr" style="width:'+right+'%"></div></div>'+
+    '<div class="plab"><span>'+left+'%</span><span>'+right+'%</span></div>';
+}
+/* odds-cell with movement arrow + flash since previous value */
+function oddsDir(key,val){
+  if(!S.oddsDir) S.oddsDir={}; if(!S.oddsPrev) S.oddsPrev={};
+  const prev=S.oddsPrev[key]; let flash="";
+  if(prev!=null && val!=null && val!==prev){ S.oddsDir[key]=val>prev?"up":"down"; flash=val>prev?"fu":"fd"; }
+  S.oddsPrev[key]=val;
+  return { dir:S.oddsDir[key]||"", flash };
+}
+function oc(side,odds,key){
+  const d=oddsDir(key,odds);
+  const cls=(odds!=null&&odds>0)?"num pos":"num neg";
+  const arr=d.dir==="up"?'<span class="arr up">▲</span>':(d.dir==="down"?'<span class="arr dn">▼</span>':'');
+  return '<div class="ocell '+d.flash+'"><span class="side">'+side+'</span>'+
+    '<span class="'+cls+'">'+arr+fmtOdds(odds)+'</span></div>';
+}
+function renderOdds(){
+  const od=S.odds, g=S.game, box=QS("#oddsBox");
+  if(!od){ box.innerHTML='<div class="muted" style="margin:auto;text-align:center">Waiting for sportsbook odds…</div>'; return; }
+  const sp=(v)=> (v>0?"+":"")+v;
+  box.innerHTML =
+    '<div class="mkt"><div class="mkt-top"><span class="nm">Moneyline</span><span class="vend">'+esc(od.vendor)+'</span></div>'+
+      '<div class="mkt-cells">'+oc(g.away.abbr,od.mlAway,"mlA")+oc(g.home.abbr,od.mlHome,"mlH")+'</div>'+popBar("moneyline")+'</div>'+
+    '<div class="mkt"><div class="mkt-top"><span class="nm">Run Line</span></div>'+
+      '<div class="mkt-cells">'+oc(g.away.abbr+" "+sp(od.spAwayV),od.spAwayO,"spA")+oc(g.home.abbr+" "+sp(od.spHomeV),od.spHomeO,"spH")+'</div>'+popBar("spread")+'</div>'+
+    '<div class="mkt"><div class="mkt-top"><span class="nm">Total Runs</span></div>'+
+      '<div class="mkt-cells">'+oc("Over "+od.totLine,od.totOver,"ouO")+oc("Under "+od.totLine,od.totUnder,"ouU")+'</div>'+popBar("over_under")+'</div>';
+}
+/* electric plasma lightning overlay (smooth curved paths; rAF crawl) */
+function injectWpBolt(){
+  const bar=document.querySelector(".tv-wp .bar");
+  if(!bar || bar.querySelector(".wp-bolt")) return;
+  const W=1000,H=60,MID=H/2;
+  const amps=[.42,.34,.46,.30,.52], seg=[10,9,11,8,12];
+  const mkpts=(amp,ph,s)=>{ const pts=[]; for(let i=0;i<=s;i++){ const x=i/s*W; const edge=(i===0||i===s)?0:1; const y=MID+edge*(Math.sin(i*0.8+ph)*0.55+(Math.random()-0.5)*0.22)*H*amp; pts.push([x,y]); } return pts; };
+  const smooth=(pts)=>{ if(pts.length<2) return ""; let d="M"+pts[0][0].toFixed(1)+","+pts[0][1].toFixed(1); for(let i=0;i<pts.length-1;i++){ const p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||p2; const c1x=p1[0]+(p2[0]-p0[0])/6,c1y=p1[1]+(p2[1]-p0[1])/6,c2x=p2[0]-(p3[0]-p1[0])/6,c2y=p2[1]-(p3[1]-p1[1])/6; d+="C"+c1x.toFixed(1)+","+c1y.toFixed(1)+" "+c2x.toFixed(1)+","+c2y.toFixed(1)+" "+p2[0].toFixed(1)+","+p2[1].toFixed(1); } return d; };
+  const path=(cls,i)=>'<path class="tendril '+cls+'" fill="none" stroke-linecap="round" stroke-linejoin="round" d="'+smooth(mkpts(amps[i],i*3+1,seg[i]))+'"/>';
+  bar.insertAdjacentHTML("beforeend",
+    '<svg class="wp-bolt" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'
+    +'<path class="core" fill="none" stroke-linecap="round" d="M0 '+MID+' L'+W+' '+MID+'"/>'
+    +'<g class="bolts">'+path("b1",0)+path("b2",1)+path("b3",2)+path("b4",3)+path("b5",4)+'</g></svg>');
+  const lines=Array.prototype.slice.call(bar.querySelectorAll(".wp-bolt .tendril"));
+  let last=0, ph=0;
+  function tick(t){
+    if(!document.body.contains(bar)) return;
+    if(t-last>110){ last=t; ph+=0.6; for(let i=0;i<lines.length;i++){ lines[i].setAttribute("d", smooth(mkpts(amps[i], ph+i*2.1, seg[i]))); } }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+function propChip(p,game){
+  const ab=esc(initials(p.name)), mid=MLBAM[p.playerId], side=PROP_TEAM[p.playerId];
+  const g2=game||(S&&S.game); const teamFb=(side && g2 && g2[side] && g2[side].abbr) ? logoUrl(g2[side].abbr) : "";
+  // 1) real MLB headshot (resolved via statsapi) → on error fall back to team logo, then initials
+  if(mid){
+    const onerr = teamFb
+      ? "this.onerror=null;this.classList.remove('headshot');this.classList.add('logo');this.src='"+teamFb+"'"
+      : "this.onerror=null;var s=document.createElement('span');s.className='prop-chip pcfb';s.textContent='"+ab+"';this.replaceWith(s)";
+    return '<img class="prop-chip headshot" src="'+mlbHeadshot(mid)+'" alt="'+ab+'" onerror="'+onerr+'">';
+  }
+  // 2) team logo
+  if(teamFb){
+    return '<img class="prop-chip" src="'+teamFb+'" alt="'+ab+'" '+
+      "onerror=\"this.onerror=null;var s=document.createElement('span');s.className='prop-chip pcfb';s.textContent=this.alt;this.replaceWith(s)\">";
+  }
+  // 3) initials
+  return '<span class="prop-chip pcfb">'+ab+'</span>';
+}
+function renderPropsTV(){
+  const box=QS("#propsBox");
+  const list=(S.props||[]).filter(p=>p.odds!=null);   // skip props with no price (avoid "—" cards)
+  if(!list.length){ box.innerHTML='<span class="muted">No props available for this game.</span>'; return; }
+  const cards=list.map(p=>'<div class="prop">'+propChip(p,S.game)+'<div class="pinfo">'+
+    '<div class="pn">'+esc(p.name)+'</div>'+
+    '<div class="pl2">'+esc(p.prop)+' '+(p.line||"")+'+</div>'+
+    '<div class="po">'+fmtOdds(p.odds)+'</div></div></div>').join("");
+  // 4 identical copies + translateX(-25%) = one copy width → seamless loop regardless of count.
+  // Duration scales with count so scroll speed stays readable.
+  const dur=Math.max(24, list.length*5);
+  box.innerHTML='<div class="props-track" style="animation-duration:'+dur+'s">'+cards+cards+cards+cards+'</div>';
+}
+const TROPHY_SVG=`<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Holographic championship trophy">
+  <defs>
+    <linearGradient id="cupGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6ffff" stop-opacity="0.55"/><stop offset="0.35" stop-color="#8fefff" stop-opacity="0.40"/><stop offset="1" stop-color="#36d6ff" stop-opacity="0.22"/></linearGradient>
+    <linearGradient id="cupEdge" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#36d6ff" stop-opacity="0.15"/><stop offset="0.5" stop-color="#ffffff" stop-opacity="0.85"/><stop offset="1" stop-color="#36d6ff" stop-opacity="0.15"/></linearGradient>
+    <linearGradient id="stemGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fefff" stop-opacity="0.45"/><stop offset="1" stop-color="#36d6ff" stop-opacity="0.30"/></linearGradient>
+    <radialGradient id="poolGrad" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#8fefff" stop-opacity="0.65"/><stop offset="0.5" stop-color="#36d6ff" stop-opacity="0.30"/><stop offset="1" stop-color="#36d6ff" stop-opacity="0"/></radialGradient>
+    <radialGradient id="rimSheen" cx="0.5" cy="0.35" r="0.65"><stop offset="0" stop-color="#ffffff" stop-opacity="0.7"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+    <filter id="bloom" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="softGlow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="6"/></filter>
+    <clipPath id="trophyClip"><path d="M70 46 H170 V70 Q170 118 138 134 Q126 140 126 150 V164 H114 V150 Q114 140 102 134 Q70 118 70 70 Z"/><rect x="108" y="164" width="24" height="22"/><path d="M86 186 H154 L162 200 H78 Z"/><rect x="66" y="200" width="108" height="14" rx="3"/></clipPath>
+  </defs>
+  <ellipse cx="120" cy="214" rx="92" ry="22" fill="url(#poolGrad)" filter="url(#softGlow)"/>
+  <ellipse cx="120" cy="214" rx="70" ry="13" fill="url(#poolGrad)"/>
+  <ellipse cx="120" cy="213" rx="46" ry="6" fill="#e6ffff" opacity="0.5"/>
+  <g filter="url(#bloom)"><g opacity="0.96"><animate attributeName="opacity" values="0.96;0.82;1;0.9;0.96" dur="4.2s" repeatCount="indefinite"/>
+    <path d="M70 64 Q40 64 40 88 Q40 112 72 116" fill="none" stroke="#36d6ff" stroke-opacity="0.5" stroke-width="6"/>
+    <path d="M70 64 Q40 64 40 88 Q40 112 72 116" fill="none" stroke="#bff7ff" stroke-opacity="0.9" stroke-width="2"/>
+    <path d="M170 64 Q200 64 200 88 Q200 112 168 116" fill="none" stroke="#36d6ff" stroke-opacity="0.5" stroke-width="6"/>
+    <path d="M170 64 Q200 64 200 88 Q200 112 168 116" fill="none" stroke="#bff7ff" stroke-opacity="0.9" stroke-width="2"/>
+    <path d="M70 46 H170 V70 Q170 118 138 134 Q126 140 126 150 V164 H114 V150 Q114 140 102 134 Q70 118 70 70 Z" fill="url(#cupGrad)" stroke="#8fefff" stroke-opacity="0.85" stroke-width="1.5"/>
+    <rect x="64" y="40" width="112" height="10" rx="5" fill="url(#cupEdge)"/>
+    <rect x="64" y="40" width="112" height="10" rx="5" fill="none" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.8"/>
+    <ellipse cx="120" cy="78" rx="40" ry="30" fill="url(#rimSheen)"/>
+    <rect x="108" y="164" width="24" height="22" fill="url(#stemGrad)" stroke="#8fefff" stroke-opacity="0.7" stroke-width="1.2"/>
+    <path d="M86 186 H154 L162 200 H78 Z" fill="url(#stemGrad)" stroke="#8fefff" stroke-opacity="0.7" stroke-width="1.2"/>
+    <rect x="66" y="200" width="108" height="14" rx="3" fill="url(#cupGrad)" stroke="#8fefff" stroke-opacity="0.8" stroke-width="1.3"/>
+    <rect x="66" y="200" width="108" height="3.5" fill="#e6ffff" opacity="0.55"/>
+    <line x1="120" y1="50" x2="120" y2="160" stroke="#ffffff" stroke-opacity="0.35" stroke-width="2"/>
+    <g clip-path="url(#trophyClip)" stroke="#bff7ff" stroke-width="1"><g opacity="0.28"><line x1="60" y1="56" x2="180" y2="56"/><line x1="60" y1="64" x2="180" y2="64"/><line x1="60" y1="72" x2="180" y2="72"/><line x1="60" y1="80" x2="180" y2="80"/><line x1="60" y1="88" x2="180" y2="88"/><line x1="60" y1="96" x2="180" y2="96"/><line x1="60" y1="104" x2="180" y2="104"/><line x1="60" y1="112" x2="180" y2="112"/><line x1="60" y1="120" x2="180" y2="120"/><line x1="60" y1="128" x2="180" y2="128"/><line x1="60" y1="136" x2="180" y2="136"/><line x1="60" y1="144" x2="180" y2="144"/><line x1="60" y1="152" x2="180" y2="152"/><line x1="60" y1="160" x2="180" y2="160"/><line x1="60" y1="170" x2="180" y2="170"/><line x1="60" y1="178" x2="180" y2="178"/><line x1="60" y1="190" x2="180" y2="190"/><line x1="60" y1="198" x2="180" y2="198"/><line x1="60" y1="206" x2="180" y2="206"/><line x1="60" y1="212" x2="180" y2="212"/><animateTransform attributeName="transform" type="translate" values="0 0; 0 8; 0 0" dur="3.5s" repeatCount="indefinite"/></g></g>
+    <path d="M120 70 l4.7 9.5 10.5 1.5 -7.6 7.4 1.8 10.4 -9.4 -4.9 -9.4 4.9 1.8 -10.4 -7.6 -7.4 10.5 -1.5 Z" fill="#ffffff" fill-opacity="0.85"/>
+  </g></g>
+</svg>`;
+const TROPHY_IMG='<img class="trophy-img" src="trophy.png" alt="Championship trophy" onerror="this.onerror=null;this.outerHTML=TROPHY_SVG">';
+function renderLeaderboardTV(){
+  const lb=leaderboard(), box=QS("#lbBox");
+  if(!lb.length){ box.innerHTML='<div class="lb-empty"><div class="lb-trophy">'+TROPHY_IMG+'</div>'+
+    '<div>No players yet.<br>Scan the code to join &amp; bet!</div></div>'; return; }
+  // Build the wrap (entries + persistent trophy) once; afterwards only refresh the entries,
+  // so the trophy's hologram animation doesn't restart on every leaderboard update.
+  let ent=box.querySelector('.lb-entries');
+  if(!ent){
+    box.innerHTML='<div class="lb-wrap"><div class="lb-entries"></div>'+
+      '<div class="lb-trophy lb-trophy-side">'+TROPHY_IMG+'</div></div>';
+    ent=box.querySelector('.lb-entries');
+  }
+  const c=lb[0], recs=c.wins+c.losses;
+  const cSub = recs>0 ? (c.wins+"W · "+c.losses+"L"+(c.streak>=3?" · 🔥 "+c.streak+" win streak":"")) : (c.open?c.open+" open bet"+(c.open===1?"":"s"):"Leading the room");
+  let html='<div class="champ"><div class="av" style="background:'+colorFor(c.alias)+'">'+esc(initials(c.alias))+'</div>'+
+    '<div class="info"><div class="nm">👑 '+esc(c.alias)+'</div><div class="sub">'+cSub+'</div></div>'+
+    '<div class="bal '+(c.net>0?"up":(c.net<0?"dn":""))+'">$'+Math.round(c.bal)+'</div></div>';
+  if(lb.length>1){
+    html+='<div class="lb-list">';
+    for(let i=1;i<lb.length;i++){ const e=lb[i];
+      const medal=i===1?"🥈":(i===2?"🥉":(i+1));
+      const cls=e.net>0?"bal up":(e.net<0?"bal dn":"bal");
+      const net=(e.net>0?"+":"")+Math.round(e.net);
+      html+='<div class="lb-row"><div class="rk">'+medal+'</div>'+
+        '<div class="av" style="background:'+colorFor(e.alias)+'">'+esc(initials(e.alias))+'</div>'+
+        '<div class="who"><span class="nme">'+esc(e.alias)+streakBadge(e.streak)+'</span>'+
+        (e.open?'<span class="tag">'+e.open+' open</span>':'')+'</div>'+
+        '<div class="'+cls+'">$'+Math.round(e.bal)+' <span class="net">('+net+')</span></div></div>';
+    }
+    html+='</div>';
+  }
+  ent.innerHTML=html;
+}
+
+/* ============================================================================
+   WEBSOCKET CLIENT
+============================================================================ */
+const NET={ code:null, ws:null };
+function randCode(){ const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let s=""; for(let i=0;i<4;i++) s+=a[Math.floor(Math.random()*a.length)]; return s; }
+function joinURL(code){ return location.origin+location.pathname+"?room="+code+"&api="+encodeURIComponent(API); }
+function connectWS(code, gameId, alias, onMsg, onOpen, onClose){
+  let ws;
+  try{ ws=new WebSocket(WSBASE+"/ws/"+code); }catch(e){ if(onClose)onClose(); return null; }
+  ws.onopen=()=>{ try{ ws.send(JSON.stringify({type:"join_room",data:{room_code:code,game_id:gameId,alias:alias}})); }catch(e){} if(onOpen)onOpen(ws); };
+  ws.onmessage=(ev)=>{ let m; try{ m=JSON.parse(ev.data); }catch(e){ return; } onMsg(m); };
+  ws.onclose=()=>{ if(onClose)onClose(); };
+  ws.onerror=()=>{};
+  return ws;
+}
+function tvMsg(m){ ingestMsg(S,m); if(S._clientCount!=null) QS("#watchN").textContent=Math.max(0,S._clientCount-1); /* minus the TV itself */ renderTV(); }
+
+/* ============================================================================
+   PHONE CLIENT
+============================================================================ */
+const PH={ code:null, name:"", gameId:null, ws:null, state:null,
+  bal:START_BAL, team:null, myBets:[],
+  sel:null /* current selected bet */, stake:25 };
+
+async function enterPhone(code){
+  show("phone");
+  PH.code=code;
+  PH.state=freshState({ id:null, away:{name:"Away",abbr:"AWY"}, home:{name:"Home",abbr:"HOM"} });
+  QS("#pCodeShow").textContent=" "+code;
+  QS("#pStatus").textContent="Finding room "+code+"…";
+  QS("#pJoinBtn").onclick=phoneJoin;
+  QS("#pName").addEventListener("keydown",e=>{ if(e.key==="Enter") phoneJoin(); });
+  buildChips();
+  try{
+    const r=await fetch(API+"/api/rooms/"+code);
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    PH.gameId=(await r.json()).game_id;
+    QS("#pStatus").textContent="";
+  }catch(e){ QS("#pStatus").textContent="Room "+code+" not found — ask the host to open it (or check the backend)."; }
+}
+function phoneJoin(){
+  const nm=(QS("#pName").value||"").trim();
+  if(!nm){ QS("#pStatus").textContent="Enter your name first."; return; }
+  if(!PH.gameId){ QS("#pStatus").textContent="Can't reach the room / backend."; return; }
+  PH.name=nm.slice(0,16);
+  QS("#pStatus").textContent="Connecting…";
+  PH.ws=connectWS(PH.code, PH.gameId, PH.name, phoneMsg,
+    ()=>{ QS("#pGate").classList.add("hidden"); QS("#pApp").classList.remove("hidden"); QS("#pYou").textContent=PH.name; },
+    ()=>{ QS("#pStatus").textContent="Disconnected — refresh to rejoin."; });
+}
+function phoneSend(obj){ try{ if(PH.ws&&PH.ws.readyState===1) PH.ws.send(JSON.stringify(obj)); }catch(e){} }
+function phoneMsg(m){
+  const t=m.type, d=m.data||{};
+  if(t==="ack"){ if(d.balance!=null) PH.bal=d.balance; }
+  else if(t==="error"){ toast((d.message||"Bet rejected").replace(/^Invalid bet:\s*/,"")); }
+  else {
+    ingestMsg(PH.state, m);
+    if(t==="room_state" && PH.state._user){
+      if(PH.state._user.team) PH.team=PH.state._user.team;
+      if(PH.state._user.balance!=null) PH.bal=PH.state._user.balance;
+    }
+  }
+  const me=(PH.state.leaderboard||[]).find(e=>e.alias===PH.name); // keep balance authoritative
+  if(me) PH.bal=me.balance;
+  renderPhone();
+}
+
+function renderPhone(){
+  const st=PH.state; if(!st) return;
+  QS("#pBal").textContent=Math.round(PH.bal);
+  const lb=st.leaderboard||[]; const rank=lb.findIndex(e=>e.alias===PH.name);
+  QS("#pRank").textContent = rank>=0 ? ("Rank #"+(rank+1)+" of "+lb.length) : "";
+  const aw=st.game.away, hm=st.game.home;
+  QS("#tselAwayN").textContent=aw.name; QS("#tselHomeN").textContent=hm.name;
+  QS("#tselAwayB").innerHTML=logoTag(aw,"tsel-logo"); QS("#tselHomeB").innerHTML=logoTag(hm,"tsel-logo");
+  if(!PH.team){ QS("#pTeamPick").classList.remove("hidden"); QS("#pBet").classList.add("hidden"); }
+  else { QS("#pTeamPick").classList.add("hidden"); QS("#pBet").classList.remove("hidden"); renderBetScreen(st); }
+}
+function renderBetScreen(st){
+  const od=st.odds, g=st.game, ls=st.live;
+  QS("#msAwB").innerHTML=logoTag(g.away,"ms-logo",true); QS("#msAw").textContent=g.away.abbr; QS("#msHmB").innerHTML=logoTag(g.home,"ms-logo",true); QS("#msHm").textContent=g.home.abbr; { const wpH=computeWinProb(st), hp=Math.round(wpH*100), ap=100-hp, eA=QS("#pwpAway"), eH=QS("#pwpHome"), lA=QS("#pwpAwayLab"), lH=QS("#pwpHomeLab"); if(eA&&eH){eA.style.width=ap+"%";eH.style.width=hp+"%";const aWin=ap>=hp;eA.classList.toggle("winning",aWin);eA.classList.toggle("losing",!aWin);eH.classList.toggle("winning",!aWin);eH.classList.toggle("losing",aWin);} if(lA&&lH){lA.textContent=g.away.abbr+" "+ap+"%";lH.textContent=hp+"% "+g.home.abbr;} }
+  QS("#msAwS").textContent=ls.away; QS("#msHmS").textContent=ls.home;
+  QS("#msInn").textContent = ls.state==="final"?"Final":(ls.state==="live"?("Inn "+(ls.inning||1)):"First pitch");
+  QS("#msSt").textContent = ls.state==="live"?"● LIVE":(ls.state==="final"?"":"scheduled");
+  // odds buttons
+  const setBtn=(m,s,label,odds,team)=>{
+    const b=QS('.betbtn[data-m="'+m+'"][data-s="'+s+'"]'); if(!b) return;
+    const _t=b.querySelector(".t"); if(team){ _t.innerHTML=logoTag(team,"bl-logo",true)+'<span class="bl-nm">'+esc(label)+'</span>'; } else { _t.textContent=label; }
+    const oe=b.querySelector(".o"); oe.textContent=fmtOdds(odds);
+    oe.className="o"+(odds==null?"":(odds>0?" pos":" neg"));
+    b.disabled = odds==null || ls.state==="final";
+    b.dataset.odds = odds==null?"":odds;
+  };
+  if(od){
+    const sp=(v)=>(v>0?"+":"")+v;
+    setBtn("moneyline","away",g.away.abbr,od.mlAway,g.away); setBtn("moneyline","home",g.home.abbr,od.mlHome,g.home);
+    setBtn("spread","away",g.away.abbr+" "+sp(od.spAwayV),od.spAwayO,g.away); setBtn("spread","home",g.home.abbr+" "+sp(od.spHomeV),od.spHomeO,g.home);
+    setBtn("over_under","over","Over "+od.totLine,od.totOver); setBtn("over_under","under","Under "+od.totLine,od.totUnder);
+    QS("#bbML").style.display=QS("#bbSP").style.display=QS("#bbOU").style.display="";
+  } else { QS("#bbML").style.display=QS("#bbSP").style.display=QS("#bbOU").style.display="none"; }
+  // props
+  const pl=QS("#pPropList");
+  if(st.props&&st.props.length){
+    QS("#bbProp").style.display=""; phoneHeadshots();
+    pl.innerHTML="";
+    st.props.forEach(p=>{
+      const b=document.createElement("button"); b.className="betbtn prop-row"; b.dataset.m="player_prop"; b.dataset.s="over";
+      b.dataset.odds=p.odds==null?"":p.odds; b.disabled=p.odds==null||ls.state==="final";
+      b.dataset.desc=p.name+" "+p.prop+" o"+p.line; b.dataset.line=p.line; b.dataset.pid=p.playerId;
+      b.innerHTML=propChip(p,st.game)+'<span class="t"><span class="pr-nm">'+esc(p.name)+'</span><span class="pr-sub">'+esc(p.prop)+' '+p.line+'+</span></span><span class="o gold">'+fmtOdds(p.odds)+'</span>';
+      pl.appendChild(b);
+    });
+  } else { QS("#bbProp").style.display="none"; }
+  wireBetButtons();
+  renderMyBets(st);
+}
+function wireBetButtons(){
+  QSA("#pBet .betbtn").forEach(b=>{
+    b.onclick=()=>{
+      if(b.disabled) return;
+      QSA("#pBet .betbtn").forEach(x=>x.classList.remove("sel"));
+      b.classList.add("sel");
+      const m=b.dataset.m, s=b.dataset.s, odds=parseInt(b.dataset.odds,10);
+      let desc, line=0, pid=null;
+      const st=PH.state, od=st.odds, g=st.game;
+      if(m==="player_prop"){ desc=b.dataset.desc; line=parseFloat(b.dataset.line); pid=b.dataset.pid; }
+      else if(m==="moneyline"){ desc=(s==="away"?g.away.abbr:g.home.abbr)+" ML"; }
+      else if(m==="spread"){ const v=s==="away"?od.spAwayV:od.spHomeV; line=v; desc=(s==="away"?g.away.abbr:g.home.abbr)+" "+((v>0?"+":"")+v); }
+      else { line=od.totLine; desc=(s==="over"?"Over ":"Under ")+od.totLine+" runs"; }
+      PH.sel={market:m,side:s,odds,line,desc,playerId:pid};
+      updateSlip();
+    };
+  });
+}
+function buildChips(){
+  const amts=[10,25,50,100], row=QS("#chipRow"); row.innerHTML="";
+  amts.forEach(a=>{ const c=document.createElement("button"); c.className="chip"+(a===PH.stake?" sel":""); c.textContent="$"+a;
+    c.onclick=()=>{ PH.stake=a; QSA("#chipRow .chip").forEach(x=>x.classList.remove("sel")); c.classList.add("sel"); updateSlip(); };
+    row.appendChild(c); });
+}
+function updateSlip(){
+  const pb=QS("#placeBtn");
+  if(!PH.sel){ QS("#slipDesc").textContent="Tap a bet above"; QS("#slipOdds").textContent=""; QS("#slipWin").textContent="—"; pb.disabled=true; return; }
+  QS("#slipDesc").textContent=PH.sel.desc;
+  QS("#slipOdds").textContent=fmtOdds(PH.sel.odds);
+  const win=profitOn(PH.stake,PH.sel.odds);
+  QS("#slipWin").textContent="$"+PH.stake+" → $"+(PH.stake+Math.round(win));
+  pb.disabled=false;
+  pb.textContent="Place $"+PH.stake+" bet";
+}
+QS("#placeBtn") && (QS("#placeBtn").onclick=()=>{
+  if(!PH.sel) return;
+  if(PH.stake>PH.bal){ toast("Not enough balance"); return; }
+  phoneSend({type:"place_bet", data:{ market:PH.sel.market, side:PH.sel.side, amount:PH.stake,
+    odds:PH.sel.odds, description:PH.sel.desc, line:PH.sel.line }});
+  PH.myBets.push({ market:PH.sel.market, side:PH.sel.side, amount:PH.stake, odds:PH.sel.odds, line:PH.sel.line, desc:PH.sel.desc });
+  toast("Bet placed: "+PH.sel.desc);
+  PH.sel=null; QSA("#pBet .betbtn").forEach(x=>x.classList.remove("sel")); updateSlip();
+});
+/* grade a bet client-side once the game is final (mirrors the backend) */
+function settleClient(b, aw, hm){
+  const tot=aw+hm;
+  if(b.market==="moneyline"){ if(aw===hm) return null; return (b.side==="away")?aw>hm:hm>aw; }
+  if(b.market==="spread"){ const adj=(b.side==="away")?aw+b.line-hm:hm+b.line-aw; return adj>0?true:(adj<0?false:null); }
+  if(b.market==="over_under"){ if(tot===b.line) return null; return (b.side==="over")?tot>b.line:tot<b.line; }
+  return null; // player props refund
+}
+async function phoneHeadshots(){ if(PH._hsBusy) return; const st=PH.state; if(!st||!st.props||!st.props.length||!st.game) return; const g=st.game, ids=[...new Set(st.props.map(p=>p.playerId))].filter(id=>id!=null); const need=(PH._propsGame!==g.id)||ids.some(id=>!(id in MLBAM)); if(!need) return; PH._hsBusy=true; try{ if(PH._propsGame!==g.id){ PH._propsGame=g.id; await loadPropTeams(g); } await resolveHeadshots(st.props, ()=>{ if(!QS("#phone").classList.contains("hidden")&&PH.team) renderBetScreen(PH.state); }); } finally{ PH._hsBusy=false; } }
+function renderMyBets(st){
+  const box=QS("#myBets");
+  if(!PH.myBets.length){ box.innerHTML='<div class="muted" style="font-size:13px">No bets yet — pick one above.</div>'; return; }
+  const final=st.live.state==="final";
+  box.innerHTML=PH.myBets.slice().reverse().map(b=>{
+    let res,cls;
+    if(!final){ res="OPEN"; cls="open"; }
+    else { const won=settleClient(b, st.live.away, st.live.home);
+      if(won===true){ res="WON +$"+Math.round(profitOn(b.amount,b.odds)); cls="win"; }
+      else if(won===false){ res="LOST -$"+b.amount; cls="loss"; }
+      else { res="PUSH"; cls="push"; } }
+    return '<div class="mybet"><span>'+esc(b.desc)+' <span class="muted">$'+b.amount+' @ '+fmtOdds(b.odds)+'</span></span><span class="res '+cls+'">'+res+'</span></div>';
+  }).join("");
+}
+
+/* team pick wiring */
+function wireTeamPick(){
+  let chosen=null;
+  const sel=(side,el)=>{ chosen=side; QS("#tselAway").classList.toggle("sel",side==="away"); QS("#tselHome").classList.toggle("sel",side==="home"); QS("#pTeamGo").disabled=false; };
+  QS("#tselAway").onclick=()=>sel("away"); QS("#tselHome").onclick=()=>sel("home");
+  QS("#pTeamGo").onclick=()=>{ if(!chosen) return; phoneSend({type:"set_team",data:{team:chosen}}); PH.team=chosen; renderPhone(); };
+}
+
+function toast(msg){ const t=QS("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove("show"),2200); }
+
+/* ============================================================================
+   SETUP / GAME PICKER (host)
+============================================================================ */
+function localDateStr(d){ d=d||new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function selectedDay(){ const el=QS("#dayInput"); return (el&&el.value)?el.value:localDateStr(); }
+function shiftDay(delta){ const el=QS("#dayInput"); const base=(el&&el.value)?el.value:localDateStr();
+  const d=new Date(base+"T12:00:00"); d.setDate(d.getDate()+delta); el.value=localDateStr(d); loadGames(); }
+async function loadGames(){
+  const list=QS("#gameList"), msg=QS("#gameMsg");
+  const day=selectedDay();
+  list.innerHTML=""; msg.textContent="Loading games for "+day+"…";
+  let games;
+  try{ const r=await fetch(API+"/api/games/today?day="+encodeURIComponent(day)); if(!r.ok) throw new Error("HTTP "+r.status); games=(await r.json()).games||[]; }
+  catch(e){ msg.innerHTML='<span class="err">Couldn\'t reach the backend at <b>'+esc(API)+'</b> — is the Python server running? ('+esc(e.message||String(e))+')</span>'; return; }
+  if(!games.length){ msg.innerHTML="No MLB games on "+day+"."; return; }
+  // sort: live first, then scheduled, then final
+  const ord={live:0,pre:1,final:2};
+  games.sort((a,b)=>ord[gameState(a)]-ord[gameState(b)] || new Date(a.date)-new Date(b.date));
+  msg.textContent="";
+  games.forEach(g=>{
+    const st=gameState(g), aw=teamObj(g.away_team,g.away_team_name), hm=teamObj(g.home_team,g.home_team_name);
+    const t=new Date(g.date), time=t.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
+    const stLab=st==="live"?"● LIVE":(st==="final"?"FINAL":time);
+    const card=document.createElement("div"); card.className="gcard";
+    card.innerHTML='<div class="teams">'+logoTag(aw,"glg",true)+aw.abbr+'<span class="vs">@</span>'+logoTag(hm,"glg",true)+hm.abbr+
+      ' <span class="statedot s-'+st+'">'+stLab+'</span></div>'+
+      '<div class="meta"><span>'+aw.name+' @ '+hm.name+'</span></div>'+
+      '<div class="meta"><span>'+(g.venue||"")+'</span><span>'+(st==="live"||st==="final"?((g.away_team_data&&g.away_team_data.runs)||0)+"–"+((g.home_team_data&&g.home_team_data.runs)||0):"")+'</span></div>';
+    card.onclick=()=>startGame({ id:g.id, away:aw, home:hm, venue:g.venue, state:st });
+    list.appendChild(card);
+  });
+}
+/* prop playerId -> 'away'/'home' (for the prop logo chip), built from team rosters */
+let PROP_TEAM={};      // playerId -> 'away'/'home'
+let PROP_PLAYER={};    // playerId -> {side, name(full), dob}
+let MLBAM={};          // playerId -> MLBAM id | null (looked up, no match)
+function mlbHeadshot(id){ return "https://midfield.mlbstatic.com/v1/people/"+id+"/spots/120"; }
+function dobToISO(dob){ // balldontlie "MM/DD/YY" -> "YYYY-MM-DD"
+  if(!dob) return null; const m=/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/.exec(String(dob).trim()); if(!m) return null;
+  let y=+m[3]; if(y<100) y=(y<30?2000+y:1900+y);
+  return y+"-"+String(+m[1]).padStart(2,"0")+"-"+String(+m[2]).padStart(2,"0");
+}
+async function loadPropTeams(game){
+  PROP_TEAM={}; PROP_PLAYER={}; MLBAM={};
+  const grab=async(side,id)=>{ if(!id) return; try{
+    const r=await fetch(API+"/api/players/team/"+id); if(!r.ok) return;
+    (((await r.json()).players)||[]).forEach(pl=>{ if(pl&&pl.id!=null){
+      PROP_TEAM[pl.id]=side;
+      PROP_PLAYER[pl.id]={side, name:pl.full_name||((pl.first_name||"")+" "+(pl.last_name||"")).trim(), dob:pl.dob};
+    }});
+  }catch(e){} };
+  await Promise.all([ grab("away",game.away&&game.away.id), grab("home",game.home&&game.home.id) ]);
+  try{ if(S) renderPropsTV(); }catch(e){}
+  resolveHeadshots();
+}
+/* Bridge balldontlie players -> MLBAM id via MLB statsapi (key-less, CORS *) for real headshots. */
+let _headBusy=false;
+async function resolveHeadshots(propsArg,afterCb){
+  if(_headBusy) return;
+  const props=propsArg||(S&&S.props)||[]; const ids=[...new Set(props.map(p=>p.playerId))].filter(id=>id!=null && !(id in MLBAM));
+  if(!ids.length) return;
+  _headBusy=true;
+  await Promise.all(ids.map(async id=>{
+    const info=PROP_PLAYER[id], name=info&&info.name;
+    if(!name){ MLBAM[id]=null; return; }
+    try{
+      const r=await fetch("https://statsapi.mlb.com/api/v1/people/search?names="+encodeURIComponent(name)+"&fields=people,id,fullName,birthDate");
+      const people=((await r.json()).people)||[];
+      let pick=people[0];
+      if(people.length>1 && info.dob){ const iso=dobToISO(info.dob), m=people.find(p=>p.birthDate===iso); if(m) pick=m; }
+      MLBAM[id]=pick?pick.id:null;
+    }catch(e){ MLBAM[id]=null; }
+  }));
+  _headBusy=false;
+  try{ if(afterCb) afterCb(); else if(S) renderPropsTV(); }catch(e){}
+}
+async function startGame(game){
+  S=freshState(game);
+  show("tv");
+  loadPropTeams(game);
+  const code=randCode(); NET.code=code;
+  QS("#roomCode").textContent=code;
+  const url=joinURL(code);
+  QS("#joinUrl").textContent=url.replace(/^https?:\/\//,"");
+  QS("#qrImg").src="https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=0&data="+encodeURIComponent(url);
+  QS("#joinHint").textContent="Creating room on the server…";
+  renderTV();
+  try{
+    const r=await fetch(API+"/api/rooms?room_code="+code+"&game_id="+game.id,{method:"POST"});
+    if(!r.ok) throw new Error("HTTP "+r.status);
+  }catch(e){
+    S._err="Can't reach the backend at "+API+" — is the Python server running?"; renderTV();
+    QS("#joinHint").textContent="Backend unreachable. Start it, then ⇄ Change game to retry.";
+    return;
+  }
+  QS("#joinHint").textContent = location.protocol==="https:" && WSBASE.startsWith("ws:")
+    ? "⚠️ Page is HTTPS but backend is ws:// — browsers block that. Serve the backend over wss:// to use phone join."
+    : "";  /* normal case: empty → collapses (the big SCAN TO JOIN block already says it) */
+  if(NET.ws){ try{ NET.ws.close(); }catch(e){} }
+  NET.ws=connectWS(code, game.id, "TV-"+code, tvMsg, null, null);
+}
+
+/* ============================================================================
+   BOOT
+============================================================================ */
+function boot(){
+  const params=new URLSearchParams(location.search);
+  const room=params.get("room");
+  wireTeamPick();
+  if(room){ enterPhone(room.toUpperCase()); return; }
+  // host
+  show("setup");
+  const di=QS("#dayInput"); if(di){ di.value=localDateStr(); di.onchange=loadGames; }
+  QS("#dayPrev").onclick=()=>shiftDay(-1);
+  QS("#dayNext").onclick=()=>shiftDay(1);
+  QS("#dayToday").onclick=()=>{ if(di) di.value=localDateStr(); loadGames(); };
+  QS("#reloadGames").onclick=loadGames;
+  const db=QS("#demoBtn"); if(db) db.style.display="none";   // backend-driven; no client demo
+  QS("#keyBtn").onclick=()=>{ const k=prompt("Backend URL (the Python server):", API); if(k){ try{ localStorage.setItem("bb-backend",k.trim().replace(/\/+$/,"")); }catch(e){} location.reload(); } };
+  QS("#changeGame").onclick=()=>{ if(NET.ws){ try{ NET.ws.close(); }catch(e){} } show("setup"); loadGames(); };
+  QS("#addPlayer").onclick=()=>{
+    if(NET.code){ window.open(joinURL(NET.code),"_blank"); }
+    else { QS("#joinHint").textContent="Pick a game first to open the room."; }
+  };
+  loadGames();
+  // simulated live-odds flashes: every few seconds flash a random market button
+  // green (shortening) or red (lengthening), then fade back — pure ambiance.
+  setInterval(()=>{
+    if(QS("#tv").classList.contains("hidden")) return;
+    const cells=document.querySelectorAll('#oddsBox .ocell');
+    if(!cells.length) return;
+    const c=cells[Math.floor(Math.random()*cells.length)];
+    const cls=Math.random()<0.5?'fu':'fd';
+    c.classList.remove('fu','fd'); void c.offsetWidth; c.classList.add(cls);
+    setTimeout(()=>c.classList.remove(cls), 1200);
+  }, 3200);
+}
+boot();
+</script>
+</body>
+</html>
