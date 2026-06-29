@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="0.9"/></filter>
+  </defs>
+  <!-- traces: edge crossings at the four midpoints (60,0)(60,120)(0,60)(120,60) so the pattern tiles seamlessly -->
+  <g fill="none" stroke="#3fd0ff" stroke-opacity="0.5" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+    <path d="M60 0 V38 H38 V72 H60 V120"/>
+    <path d="M0 60 H42 V46"/>
+    <path d="M120 60 H82 V86 H58"/>
+    <path d="M82 60 V30 H104"/>
+    <path d="M38 38 H22"/>
+    <path d="M60 84 V100 H80"/>
+  </g>
+  <!-- solder pads -->
+  <g fill="none" stroke="#8fe8ff" stroke-opacity="0.5" stroke-width="1">
+    <rect x="56.5" y="-2" width="7" height="5" rx="1.5"/>
+    <rect x="-2" y="56.5" width="5" height="7" rx="1.5"/>
+    <rect x="56.5" y="117" width="7" height="5" rx="1.5"/>
+    <rect x="117" y="56.5" width="5" height="7" rx="1.5"/>
+  </g>
+  <!-- vias / nodes -->
+  <g fill="#8fe8ff" fill-opacity="0.7">
+    <circle cx="38" cy="38" r="2.4"/>
+    <circle cx="38" cy="72" r="2.2"/>
+    <circle cx="42" cy="46" r="2"/>
+    <circle cx="82" cy="60" r="2.4"/>
+    <circle cx="58" cy="86" r="2.2"/>
+    <circle cx="104" cy="30" r="1.9"/>
+    <circle cx="22" cy="38" r="1.8"/>
+    <circle cx="80" cy="100" r="2"/>
+    <circle cx="60" cy="38" r="1.7"/>
+  </g>
+</svg>

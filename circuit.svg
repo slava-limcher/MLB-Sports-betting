@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 380" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <filter id="cg" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.1"/></filter>
+  </defs>
+  <g fill="none" stroke="#46d6ff" stroke-opacity="0.32" stroke-width="1.6" stroke-linejoin="round" filter="url(#cg)">
+    <polyline points="470,46 548,46 548,96 700,96"/>
+    <polyline points="726,60 678,60 678,128 612,128"/>
+    <polyline points="448,150 486,150 486,110 540,110"/>
+    <polyline points="455,214 470,214 470,176 524,176 524,150"/>
+    <polyline points="500,300 560,300 560,258 724,258"/>
+    <polyline points="620,332 620,296 668,296"/>
+    <polyline points="742,196 700,196 700,168 662,168"/>
+    <polyline points="496,250 540,250 540,222 596,222"/>
+    <polyline points="712,330 712,300 744,300"/>
+    <polyline points="600,70 600,40 648,40"/>
+  </g>
+  <g fill="#8fe6ff" fill-opacity="0.55">
+    <circle cx="700" cy="96" r="3.4"/>
+    <circle cx="548" cy="46" r="2.6"/>
+    <circle cx="612" cy="128" r="3"/>
+    <circle cx="540" cy="110" r="2.4"/>
+    <circle cx="524" cy="150" r="2.4"/>
+    <circle cx="724" cy="258" r="3.2"/>
+    <circle cx="668" cy="296" r="2.8"/>
+    <circle cx="662" cy="168" r="2.6"/>
+    <circle cx="596" cy="222" r="2.6"/>
+    <circle cx="648" cy="40" r="2.6"/>
+    <circle cx="744" cy="300" r="2.4"/>
+  </g>
+</svg>
