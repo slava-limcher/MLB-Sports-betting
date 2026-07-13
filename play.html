@@ -1090,6 +1090,27 @@ canvas.wpc{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #tv .tv-header .brand small{font-size:clamp(11px,1.2vmin,17px);letter-spacing:3px;color:#b8cadd}
 /* team abbr under the name, mockup muted steel */
 #tv .sb-meta .ab{color:#9aa8bd;letter-spacing:1.5px}
+
+/* ===== LIT BORDERS — mockup-style edge lighting: dim steel ring that flares cyan at specific spots
+   (top-center bloom, top corners, side midpoints, faint bottom), with a soft outer spill. Gentle breathe.
+   Applied to the odds panel, props panel, and phone market cards; QR box keeps its own corner brackets. ===== */
+#tv .tv-body .tv-panel,#tv .tv-bottom .tv-panel.tv-props,#phone .betblock{position:relative;border-color:rgba(80,150,200,.20)}
+#tv .tv-body .tv-panel::after,#tv .tv-bottom .tv-panel.tv-props::after,#phone .betblock::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.7px;pointer-events:none;
+  background:
+    radial-gradient(16% 26px at 50% 0%,rgba(150,238,255,.95),rgba(150,238,255,0) 72%),
+    radial-gradient(9% 22px at 7% 0%,rgba(95,205,255,.55),transparent 72%),
+    radial-gradient(9% 22px at 93% 0%,rgba(95,205,255,.55),transparent 72%),
+    radial-gradient(60px 18% at 0% 50%,rgba(95,205,255,.38),transparent 75%),
+    radial-gradient(60px 18% at 100% 50%,rgba(95,205,255,.38),transparent 75%),
+    radial-gradient(14% 24px at 50% 100%,rgba(95,205,255,.45),transparent 72%),
+    linear-gradient(rgba(95,160,210,.30),rgba(60,110,160,.22));
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  mask-composite:exclude;
+  animation:litBreathe 4.2s ease-in-out infinite}
+#tv .tv-body .tv-panel::before,#tv .tv-bottom .tv-panel.tv-props::before{content:"";position:absolute;left:26%;right:26%;top:-9px;height:20px;pointer-events:none;background:radial-gradient(50% 100% at 50% 100%,rgba(120,225,255,.22),transparent 75%);filter:blur(3px);animation:litBreathe 4.2s ease-in-out infinite}
+@keyframes litBreathe{0%,100%{opacity:.7}50%{opacity:1}}
 </style>
 </head>
 <body>
