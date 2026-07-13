@@ -462,11 +462,11 @@ input{font-family:inherit}
 
 /* SCOREBOARD premium finish */
 .tv-score .sb-side{position:relative;isolation:isolate;background:transparent}
-.tv-score .sb-side::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(120% 150% at 0% 50%,color-mix(in srgb,var(--awC) 70%,transparent) 0%,color-mix(in srgb,var(--awC) 34%,transparent) 26%,color-mix(in srgb,var(--awC) 10%,transparent) 52%,transparent 74%),linear-gradient(90deg,color-mix(in srgb,var(--awC) 42%,#0b1525) 0%,color-mix(in srgb,var(--awC) 14%,#0b1525) 34%,#0b1525 78%)}
-.tv-score .sb-side.home::before{background:radial-gradient(120% 150% at 100% 50%,color-mix(in srgb,var(--hmC) 70%,transparent) 0%,color-mix(in srgb,var(--hmC) 34%,transparent) 26%,color-mix(in srgb,var(--hmC) 10%,transparent) 52%,transparent 74%),linear-gradient(270deg,color-mix(in srgb,var(--hmC) 42%,#0b1525) 0%,color-mix(in srgb,var(--hmC) 14%,#0b1525) 34%,#0b1525 78%)}
+.tv-score .sb-side::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(120% 150% at 0% 50%,color-mix(in srgb,var(--awC) 30%,transparent) 0%,color-mix(in srgb,var(--awC) 15%,transparent) 26%,color-mix(in srgb,var(--awC) 5%,transparent) 52%,transparent 74%),linear-gradient(90deg,color-mix(in srgb,var(--awC) 26%,#0b1525) 0%,color-mix(in srgb,var(--awC) 9%,#0b1525) 34%,#0b1525 78%)}
+.tv-score .sb-side.home::before{background:radial-gradient(120% 150% at 100% 50%,color-mix(in srgb,var(--hmC) 30%,transparent) 0%,color-mix(in srgb,var(--hmC) 15%,transparent) 26%,color-mix(in srgb,var(--hmC) 5%,transparent) 52%,transparent 74%),linear-gradient(270deg,color-mix(in srgb,var(--hmC) 26%,#0b1525) 0%,color-mix(in srgb,var(--hmC) 9%,#0b1525) 34%,#0b1525 78%)}
 .tv-score .sb-side::after{content:"";position:absolute;left:0;right:0;top:0;height:2px;z-index:1;pointer-events:none;background:linear-gradient(90deg,color-mix(in srgb,var(--awC) 90%,#fff) 0%,transparent 70%);opacity:.7}
 .tv-score .sb-side.home::after{background:linear-gradient(270deg,color-mix(in srgb,var(--hmC) 90%,#fff) 0%,transparent 70%)}
-.tv-score{background:linear-gradient(90deg,#0a1422 0%,#0b1626 50%,#0a1422 100%);box-shadow:0 0 0 1px rgba(120,170,210,.22),inset 0 1px 0 rgba(255,255,255,.07),inset 22px 0 60px -28px color-mix(in srgb,var(--awC) 80%,transparent),inset -22px 0 60px -28px color-mix(in srgb,var(--hmC) 80%,transparent),0 14px 44px rgba(0,0,0,.55)}
+.tv-score{background:linear-gradient(90deg,#0a1422 0%,#0b1626 50%,#0a1422 100%);box-shadow:0 0 0 1px rgba(120,170,210,.22),inset 0 1px 0 rgba(255,255,255,.07),inset 22px 0 60px -28px color-mix(in srgb,var(--awC) 34%,transparent),inset -22px 0 60px -28px color-mix(in srgb,var(--hmC) 34%,transparent),0 14px 44px rgba(0,0,0,.55)}
 .tv-score .sb-badge{border-radius:50%;background:radial-gradient(circle at 50% 22%,rgba(255,255,255,.55),rgba(255,255,255,0) 40%),radial-gradient(circle at 50% 116%,rgba(0,0,0,.55),rgba(0,0,0,0) 46%),radial-gradient(circle at 50% 38%,#46597a 0%,#27374f 46%,#0c1626 78%);box-shadow:0 0 0 2px #cfe2f4,0 0 0 4px #21344b,0 0 0 7px #7d9fc2,0 0 0 9px #b9d6ee,0 0 0 11px #0a1320,0 0 0 12px color-mix(in srgb,var(--awC) 60%,transparent),0 12px 28px rgba(0,0,0,.6),inset 0 4px 10px rgba(255,255,255,.34),inset 0 -9px 16px rgba(0,0,0,.6),inset 0 0 14px color-mix(in srgb,var(--awC) 45%,transparent)}
 .tv-score .sb-side.home .sb-badge{box-shadow:0 0 0 2px #cfe2f4,0 0 0 4px #21344b,0 0 0 7px #7d9fc2,0 0 0 9px #b9d6ee,0 0 0 11px #0a1320,0 0 0 12px color-mix(in srgb,var(--hmC) 60%,transparent),0 12px 28px rgba(0,0,0,.6),inset 0 4px 10px rgba(255,255,255,.34),inset 0 -9px 16px rgba(0,0,0,.6),inset 0 0 14px color-mix(in srgb,var(--hmC) 45%,transparent)}
 .tv-score .sb-badge::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;background:radial-gradient(60% 42% at 38% 24%,rgba(255,255,255,.65),rgba(255,255,255,0) 60%),linear-gradient(152deg,rgba(255,255,255,.30) 0%,rgba(255,255,255,0) 44%);mix-blend-mode:screen}
@@ -956,6 +956,140 @@ body:has(#phone:not(.hidden)){background:url("bg.png") center/cover no-repeat,#0
 /* neutral white lightning so it reads over green AND red */
 .wp-bolt .core{filter:drop-shadow(0 0 7px #ffffff) drop-shadow(0 0 3px #ffffff)}
 .wp-bolt .b1,.wp-bolt .b2,.wp-bolt .b3,.wp-bolt .b4,.wp-bolt .b5{filter:drop-shadow(0 0 6px #ffffff) drop-shadow(0 0 3px #ffffff)}
+
+/* ===== MOCKUP-EXACT SKIN (vFinal) — colors/gradients sampled from the Gemini mockup; LAYOUT UNTOUCHED ===== */
+/* page background (sampled #0a1d2b / #0a1a27 / #0c1a27) */
+#tv{background:radial-gradient(120% 90% at 50% -10%,#16344a 0%,transparent 55%),linear-gradient(175deg,#0c2130 0%,#0a1a27 55%,#081420 100%)}
+/* panels (sampled #192734→#132533, brushed) */
+.tv-panel,.joinbig{border:1px solid rgba(90,200,255,.38);
+  background:repeating-linear-gradient(rgba(255,255,255,.035) 0 1px,transparent 1px 2px),linear-gradient(180deg,#1b2f3d 0%,#16303c 48%,#122633 100%);
+  background-blend-mode:overlay;
+  box-shadow:0 0 0 1px rgba(6,14,24,.8),0 0 26px rgba(30,140,200,.14),inset 0 1px 0 rgba(170,220,250,.10),0 10px 26px rgba(0,0,0,.45)}
+/* odds cells (sampled teal #245f71→#215165→#246277 w/ cyan under-glow) */
+.ocell{border:1px solid rgba(110,215,255,.55);
+  background:linear-gradient(90deg,rgba(200,242,255,.10) 0%,rgba(200,242,255,.03) 24%,transparent 52%,rgba(110,215,250,.07) 100%),linear-gradient(180deg,rgba(255,255,255,.06) 0%,transparent 26%,transparent 62%,rgba(120,220,250,.05) 100%),linear-gradient(180deg,#255e70 0%,#215263 48%,#1e4f62 72%,#256175 100%);
+  box-shadow:0 0 18px rgba(60,190,240,.22),inset 0 1px 0 rgba(200,240,255,.18),inset 0 -8px 18px rgba(50,180,230,.25),0 6px 14px rgba(0,0,0,.38)}
+.ocell .side{color:#d6f2ff}
+.num.pos,.ocell .num.pos{color:#55d96b;text-shadow:0 0 10px rgba(85,217,107,.45)}
+.num.neg{color:#ffffff;text-shadow:0 0 8px rgba(190,230,255,.3)}
+.mkt-top .nm{color:#f2fbff;text-shadow:0 1px 2px rgba(0,0,0,.5),0 0 12px rgba(90,200,255,.2)}
+.sec-h{color:#9fd9f2;text-shadow:0 0 8px rgba(80,190,240,.3)}
+/* WIN BAR — exact mockup gradients (cyan #0b2b40→#3bebf8, orange #ffd9a0→#a04c30), overriding the green/red classes */
+.tv-wp .bar{border:2px solid rgba(160,215,245,.45);background:#06121d;box-shadow:0 0 24px rgba(40,170,230,.35),0 0 20px rgba(230,110,50,.22),inset 0 0 20px rgba(0,0,0,.5)}
+.tv-wp .bar .away,.tv-wp .bar .away.winning,.tv-wp .bar .away.losing{
+  background:linear-gradient(90deg,#0b2b40 0%,#0d3a55 18%,#12628e 40%,#1a86ad 58%,#26b8d4 74%,#3bebf8 90%,#9ff7ff 100%);
+  box-shadow:0 0 26px rgba(59,235,248,.55),inset 0 0 18px rgba(0,0,0,.25)}
+.tv-wp .bar .home,.tv-wp .bar .home.winning,.tv-wp .bar .home.losing{
+  background:linear-gradient(270deg,#a04c30 0%,#b8532f 20%,#cb502f 38%,#e15635 58%,#ec743f 76%,#ff9a55 90%,#ffd9a0 100%);
+  box-shadow:0 0 26px rgba(236,116,63,.5),inset 0 0 18px rgba(0,0,0,.25)}
+/* split divider = the mockup's warm-white hot seam (#fff3cc/#ffef92) */
+.tv-wp .away::after{background:linear-gradient(#fff3cc,#ffffff,#ffef92);
+  box-shadow:0 0 0 1.5px rgba(20,10,4,.55),0 0 10px #fff3cc,0 0 22px rgba(255,220,140,.85),0 0 30px rgba(120,220,255,.4)}
+/* win % labels: cyan left / orange right like the mockup */
+.tv-wp .lab{color:#bfe0f5}.tv-wp .lab .mid{color:#8fb3cc}
+#wpAwayLab{color:#4dd7f0;text-shadow:0 0 10px rgba(70,210,255,.4)}
+#wpHomeLab{color:#ff8a55;text-shadow:0 0 10px rgba(255,130,80,.4)}
+/* lightning: white-hot core, cyan-tinted + warm-tinted wisps (stays SMOOTH — curves already) */
+.wp-bolt .core{stroke:#eefaff;filter:drop-shadow(0 0 6px #bfeeff)}
+.wp-bolt .b1,.wp-bolt .b2{filter:drop-shadow(0 0 6px #6fe0ff) drop-shadow(0 0 3px #ffffff)}
+.wp-bolt .b3,.wp-bolt .b4{filter:drop-shadow(0 0 6px #ffb27a) drop-shadow(0 0 3px #ffffff)}
+.wp-bolt .b5{filter:drop-shadow(0 0 5px #ffffff)}
+/* player-prop cards (sampled #102a37 / gold #f3d784) */
+.prop{border:1px solid rgba(95,205,255,.4);background:linear-gradient(180deg,#123043 0%,#0a2534 100%);
+  box-shadow:0 0 14px rgba(40,160,220,.15),inset 0 1px 0 rgba(180,230,255,.08)}
+.prop .pn{color:#eef8ff}.prop .pl2{color:#9fc3d8}
+.prop .po{color:#f3d784;text-shadow:0 0 10px rgba(243,215,132,.5)}
+
+/* ===== NUMBER PLATE (v-plate) — the real plate.png image IS every odds cell. Overrides the MOCKUP-EXACT SKIN gradient & the cyan border (the plate carries its own champagne-gold bezel + brushed teal + centered cyan bloom). Relative url() works on the http backend AND file:// (no ?query — file:// treats it as a literal name). ===== */
+.ocell{
+  border:none!important;
+  border-radius:16px;
+  overflow:hidden;
+  background:
+     url("plate.png") center/100% 100% no-repeat,
+     radial-gradient(72% 135% at 50% 0%, rgba(99,219,235,.50), transparent 62%),
+     radial-gradient(72% 135% at 50% 100%, rgba(98,195,211,.42), transparent 62%),
+     linear-gradient(180deg,#20505f 0%,#173040 55%,#132836 100%) !important;
+  box-shadow:0 8px 20px rgba(0,0,0,.5), 0 0 20px rgba(70,205,255,.16) !important;
+}
+.ocell::before,.ocell::after{display:none!important}   /* plate has its own frame — no CSS corner brackets */
+.ocell .side,.ocell .num{position:relative;z-index:1}  /* label + number ride on top of the plate */
+.ocell:hover{box-shadow:0 8px 22px rgba(0,0,0,.5), 0 0 30px rgba(0,242,255,.5), 0 0 0 1px rgba(120,235,255,.6) !important}
+
+/* ===== ODDS-PANEL BACKGROUND — user asset "Background.png" (oddsbg.png) sits behind the number plates.
+   #tv .tv-body .tv-panel = the odds panel only; QR (.joincol) + props (.tv-props) panels untouched. ===== */
+#tv .tv-body .tv-panel{background:url(oddsbg.png) center center / 100% 100% no-repeat, #0e222e;background-blend-mode:normal}
+
+/* ===== STORM WIN BAR (user image) — the real lightning strip sliced at its hot seam into wpbar-l/wpbar-r;
+   halves stretch with the live win %, shimmer copies animate the baked-in bolts, old SVG bolt + fake seam OFF ===== */
+#tv .tv-wp .bar{background:#050d16}
+#tv .tv-wp .bar::before,#tv .tv-wp .bar::after{display:none}
+#tv .tv-wp .bar .wp-bolt{display:none}
+#tv .tv-wp .bar .away{position:relative;overflow:hidden;background:url(wpbar-l.png) right center / 100% 100% no-repeat}
+#tv .tv-wp .bar .home{position:relative;overflow:hidden;background:url(wpbar-r.png) left center / 100% 100% no-repeat}
+#tv .tv-wp .bar .away::before,#tv .tv-wp .bar .home::before{content:"";position:absolute;top:-4%;bottom:-4%;left:0;right:0;mix-blend-mode:screen;pointer-events:none;opacity:0}
+#tv .tv-wp .bar .away::before{background:url(wpbar-l.png) right center / 116% 108% no-repeat;animation:wpStormA 3.6s ease-in-out infinite}
+#tv .tv-wp .bar .home::before{background:url(wpbar-r.png) left center / 116% 108% no-repeat;animation:wpStormH 3.2s ease-in-out infinite}
+@keyframes wpStormA{0%,100%{opacity:.06;background-position:100% 30%}12%{opacity:.42}18%{opacity:.12}26%{opacity:.5}38%{opacity:.1}52%{opacity:.38;background-position:88% 70%}64%{opacity:.08}78%{opacity:.45}90%{opacity:.12}}
+@keyframes wpStormH{0%,100%{opacity:.08;background-position:0% 70%}10%{opacity:.45}22%{opacity:.1}34%{opacity:.5;background-position:10% 30%}48%{opacity:.12}60%{opacity:.4}74%{opacity:.1}86%{opacity:.48}}
+#tv .tv-wp .bar .away::after{content:"";position:absolute;top:0;bottom:0;left:auto;right:0;width:4px;border-radius:2px;background:linear-gradient(#fff6d8,#ffffff,#ffedaa);box-shadow:0 0 8px #fff,0 0 18px rgba(255,238,180,.9),0 0 30px rgba(150,230,255,.55);animation:wpSeamHot 1.5s ease-in-out infinite;z-index:2}
+@keyframes wpSeamHot{0%,100%{opacity:.8}50%{opacity:1;box-shadow:0 0 11px #fff,0 0 28px rgba(255,244,205,1),0 0 42px rgba(170,240,255,.7)}}
+/* storm bar animates regardless of OS reduced-motion — explicitly requested for the bar-TV display */
+
+/* ===== VIDEO STORM BAR — real moving lightning (side strips cut from the user loop, title text avoided);
+   videos ride on the PNG halves (PNG shimmer stays as no-video fallback); seam glow rides the live split ===== */
+#tv .tv-wp .bar .away video.wpv,#tv .tv-wp .bar .home video.wpv{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+#tv .tv-wp .bar.vid .away::before{background:linear-gradient(to right,transparent 55%,rgba(90,215,255,.22) 82%,rgba(190,245,255,.5) 97%,rgba(255,255,255,.55) 100%);mix-blend-mode:screen;z-index:1;animation:wpBreathA 2.4s ease-in-out infinite}
+#tv .tv-wp .bar.vid .home::before{background:linear-gradient(to left,transparent 55%,rgba(255,150,70,.2) 82%,rgba(255,225,170,.5) 97%,rgba(255,250,235,.55) 100%);mix-blend-mode:screen;z-index:1;animation:wpBreathH 2.4s ease-in-out infinite}
+@keyframes wpBreathA{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes wpBreathH{0%,100%{opacity:1}50%{opacity:.55}}
+
+/* ===== PHONE PLATES + PROPS BG — number plates on the phone bet buttons, brushed live-odds background
+   on the phone market cards, and the BOTTOM HALF of that background on player props (phone card + TV panel) ===== */
+#phone .betbtn{background:url(plate.png) center / 100% 100% no-repeat;border:none;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+#phone .betbtn.sel{background:url(plate.png) center / 100% 100% no-repeat;border:none;box-shadow:0 0 0 2px #00f2ff,0 0 20px rgba(0,242,255,.55),0 4px 12px rgba(0,0,0,.4)}
+#phone .betblock{background:url(oddsbg.png) center / 100% 100% no-repeat,#0e222e;border:1px solid rgba(90,200,255,.28);border-radius:14px;padding:11px 11px 12px;box-shadow:0 6px 18px rgba(0,0,0,.35),inset 0 1px 0 rgba(170,220,250,.08)}
+#phone .betblock h3{margin-top:0}
+#phone #bbProp{background:url(oddsbg.png) bottom center / 100% 200% no-repeat,#0e222e}
+#tv .tv-bottom .tv-panel.tv-props{background:url(oddsbg.png) bottom center / 100% 200% no-repeat,#0e222e}
+
+/* ===== PHONE STORM BAR — same real-lightning treatment as the TV bar (videos injected by the wpv script);
+   overrides the team-color gradients AND the red/green winning/losing classes ===== */
+#phone .pwp-bar{background:#050d16}
+#phone .pwp-bar::before,#phone .pwp-bar::after{display:none}
+#phone .pwp-away,#phone .pwp-away.winning,#phone .pwp-away.losing{position:relative;overflow:hidden;background:url(wpbar-l.png) right center / 100% 100% no-repeat}
+#phone .pwp-home,#phone .pwp-home.winning,#phone .pwp-home.losing{position:relative;overflow:hidden;background:url(wpbar-r.png) left center / 100% 100% no-repeat}
+#phone .pwp-bar video.wpv{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+#phone .pwp-away::after{content:"";position:absolute;top:0;bottom:0;left:auto;right:0;width:2px;border-radius:1px;background:linear-gradient(#fff6d8,#ffffff,#ffedaa);box-shadow:0 0 6px #fff,0 0 12px rgba(255,238,180,.9),0 0 18px rgba(150,230,255,.5);animation:wpSeamHot 1.5s ease-in-out infinite;z-index:2}
+
+/* ===== CANVAS STORM — the lightning is now CODE, colors sampled band-by-band from the user's video.
+   Crisp at any resolution, endless one-way flow (no loop point), bolts mathematically can never be straight
+   (baseline sine + 2-octave noise). PNG halves stay underneath as the no-JS fallback. ===== */
+canvas.wpc{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#tv .tv-wp .bar.wpc-on .away::before,#tv .tv-wp .bar.wpc-on .home::before{display:none}
+
+/* ===== HEADER MOCKUP MATCH (2026-07-13) — top of the board matched to the Gemini mockup (logos untouched).
+   Sampled: pill #9fbff2/#001535, panel navy #0f212f..#122432, side tints DARK + short-reach, brand #bfd4e7. ===== */
+/* score digits: plain giant white — the glossy plate is gone */
+#tv .tv-score .sb-score,#tv .tv-score .sb-side.home .sb-score{background:none;border:none;box-shadow:none;border-radius:0;padding:0 clamp(6px,1vmin,14px);color:#fff;font-size:clamp(52px,8.5vmin,124px);font-weight:800;text-shadow:0 3px 10px rgba(0,0,0,.5),0 1px 0 rgba(0,0,0,.35)}
+#tv .tv-score .sb-score::before{display:none}
+/* center: no band — thin dividers + exact pill */
+#tv .tv-score .sb-center{background:none;border:none;border-left:1px solid rgba(190,220,245,.16);border-right:1px solid rgba(190,220,245,.16);border-radius:0;align-self:stretch;box-shadow:none}
+#tv .tv-score .sb-center .inn{color:#f4f8fc;font-weight:800;letter-spacing:1.5px;text-shadow:0 2px 6px rgba(0,0,0,.45)}
+#tv .tv-score .sb-center .st.pre{background:#9fbff2;color:#001535;font-weight:900;letter-spacing:2px}
+/* side team tints: ONE dark rich gradient hugging the outer edge (kills the stacked bright wash) */
+#tv .tv-score .sb-side::before{background:linear-gradient(90deg,color-mix(in srgb,var(--awC) 36%,#0c1a28) 0%,color-mix(in srgb,var(--awC) 18%,#0e2030) 26%,rgba(14,32,48,0) 52%)}
+#tv .tv-score .sb-side.home::before{background:linear-gradient(270deg,color-mix(in srgb,var(--hmC) 36%,#0c1a28) 0%,color-mix(in srgb,var(--hmC) 18%,#0e2030) 26%,rgba(14,32,48,0) 52%)}
+#tv .tv-score .sb-side::after,#tv .tv-score .sb-side.home::after{display:none}
+/* panel: uniform navy core, hairline edge, soft top sheen — no team-colored inset glows */
+#tv .tv-score{background:linear-gradient(180deg,#12283a 0%,#0e2130 40%,#0c1c29 100%);border:1px solid rgba(140,180,215,.16);box-shadow:0 0 0 1px rgba(5,12,20,.7),inset 0 1px 0 rgba(255,255,255,.08),0 14px 44px rgba(0,0,0,.55)}
+/* brand row: trophy + bigger, mockup steel text */
+#tv .tv-header .brand{font-size:clamp(22px,2.6vmin,38px);color:#eef4fa}
+#tv .tv-header .brand .dot{display:none}
+#tv .tv-header .brand::before{content:"\1F3C6";font-size:.9em;filter:drop-shadow(0 0 6px rgba(255,190,60,.45))}
+#tv .tv-header .brand small{font-size:clamp(11px,1.2vmin,17px);letter-spacing:3px;color:#b8cadd}
+/* team abbr under the name, mockup muted steel */
+#tv .sb-meta .ab{color:#9aa8bd;letter-spacing:1.5px}
 </style>
 </head>
 <body>
@@ -1402,19 +1536,24 @@ function injectWpBolt(){
   const bar=document.querySelector(".tv-wp .bar");
   if(!bar || bar.querySelector(".wp-bolt")) return;
   const W=1000,H=60,MID=H/2;
-  const amps=[.42,.34,.46,.30,.52], seg=[10,9,11,8,12];
-  const mkpts=(amp,ph,s)=>{ const pts=[]; for(let i=0;i<=s;i++){ const x=i/s*W; const edge=(i===0||i===s)?0:1; const y=MID+edge*(Math.sin(i*0.8+ph)*0.55+(Math.random()-0.5)*0.22)*H*amp; pts.push([x,y]); } return pts; };
+  // [amplitude, segments] per line: [0]=core (gentle), [1..5]=tendrils.
+  // FEWER segments + HIGHER amplitude => broad, flowing, SMOOTH arcs (not near-straight);
+  // Catmull-Rom smoothing keeps every path curvy. The core is now a gentle wave, not a straight beam.
+  const spec=[[.18,9],[.50,7],[.40,6],[.58,8],[.34,5],[.64,9]];
+  const cls=["core","tendril b1","tendril b2","tendril b3","tendril b4","tendril b5"];
+  const mkpts=(amp,ph,s)=>{ const pts=[]; for(let i=0;i<=s;i++){ const x=i/s*W; const edge=(i===0||i===s)?0:1; const y=MID+edge*(Math.sin(i*0.85+ph)*0.66+(Math.random()-0.5)*0.14)*H*amp; pts.push([x,y]); } return pts; };
   const smooth=(pts)=>{ if(pts.length<2) return ""; let d="M"+pts[0][0].toFixed(1)+","+pts[0][1].toFixed(1); for(let i=0;i<pts.length-1;i++){ const p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||p2; const c1x=p1[0]+(p2[0]-p0[0])/6,c1y=p1[1]+(p2[1]-p0[1])/6,c2x=p2[0]-(p3[0]-p1[0])/6,c2y=p2[1]-(p3[1]-p1[1])/6; d+="C"+c1x.toFixed(1)+","+c1y.toFixed(1)+" "+c2x.toFixed(1)+","+c2y.toFixed(1)+" "+p2[0].toFixed(1)+","+p2[1].toFixed(1); } return d; };
-  const path=(cls,i)=>'<path class="tendril '+cls+'" fill="none" stroke-linecap="round" stroke-linejoin="round" d="'+smooth(mkpts(amps[i],i*3+1,seg[i]))+'"/>';
+  const dOf=(i,ph)=>smooth(mkpts(spec[i][0], ph+i*2.1, spec[i][1]));
   bar.insertAdjacentHTML("beforeend",
     '<svg class="wp-bolt" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'
-    +'<path class="core" fill="none" stroke-linecap="round" d="M0 '+MID+' L'+W+' '+MID+'"/>'
-    +'<g class="bolts">'+path("b1",0)+path("b2",1)+path("b3",2)+path("b4",3)+path("b5",4)+'</g></svg>');
-  const lines=Array.prototype.slice.call(bar.querySelectorAll(".wp-bolt .tendril"));
+    +'<path class="'+cls[0]+'" fill="none" stroke-linecap="round" stroke-linejoin="round" d="'+dOf(0,1)+'"/>'
+    +'<g class="bolts">'+cls.slice(1).map((c,k)=>'<path class="'+c+'" fill="none" stroke-linecap="round" stroke-linejoin="round" d="'+dOf(k+1,1)+'"/>').join("")+'</g></svg>');
+  const svg=bar.querySelector(".wp-bolt"), core=svg.querySelector(".core");
+  const lines=Array.prototype.slice.call(svg.querySelectorAll(".tendril"));
   let last=0, ph=0;
   function tick(t){
     if(!document.body.contains(bar)) return;
-    if(t-last>110){ last=t; ph+=0.6; for(let i=0;i<lines.length;i++){ lines[i].setAttribute("d", smooth(mkpts(amps[i], ph+i*2.1, seg[i]))); } }
+    if(t-last>90){ last=t; ph+=0.55; core.setAttribute("d", dOf(0,ph)); for(let i=0;i<lines.length;i++){ lines[i].setAttribute("d", dOf(i+1,ph)); } }
     requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
@@ -1848,6 +1987,135 @@ function boot(){
   }, 3200);
 }
 boot();
+</script>
+<script id="wpv">
+(function(){
+  /* colors sampled from the source video, far-end -> seam-end (left->right per canvas) */
+  var CFG = {
+    cyan: { seamRight: true, flow: 1,
+      bg: ["#162740", "#24405d", "#33597d", "#476f8f", "#54839d"],
+      core: [[84,114,140], [158,227,253]],
+      halo: [[52,71,94], [113,176,203]],
+      hot: "158,227,253" },
+    orange: { seamRight: false, flow: -1,
+      bg: ["#a75b48", "#a65e47", "#9f6247", "#94583f", "#834732"],
+      core: [[182,131,101], [253,224,149]],
+      halo: [[156,101,73], [219,140,97]],
+      hot: "253,224,149" }
+  };
+  function makeNoise(seed){
+    function rnd(i){ var x = Math.sin(i * 127.1 + seed * 311.7) * 43758.5453; return x - Math.floor(x); }
+    return function(u){ var i = Math.floor(u), f = u - i, a = rnd(i), b = rnd(i + 1), s = f * f * (3 - 2 * f); return a + (b - a) * s; };
+  }
+  var units = [];
+  function addCanvas(host, key, seed){
+    if (!host || host.querySelector("canvas.wpc")) return;
+    var c = document.createElement("canvas");
+    c.className = "wpc";
+    host.appendChild(c);
+    var bolts = [];
+    for (var i = 0; i < 5; i++) {
+      bolts.push({
+        n1: makeNoise(seed + i * 7.3), n2: makeNoise(seed + i * 13.7 + 5), nf: makeNoise(seed + i * 3.1 + 9),
+        wisp: i >= 3, ph: i * 2.399,
+        spd: 42 + 26 * ((i * 0.37) % 1),
+        f1: 0.005 + 0.0022 * ((i * 0.61) % 1),
+        f2: 0.016 + 0.007 * ((i * 0.83) % 1)
+      });
+    }
+    units.push({ c: c, ctx: c.getContext("2d"), cfg: CFG[key], bolts: bolts, host: host });
+  }
+  function ramp(a, b, s, alpha){
+    return "rgba(" + Math.round(a[0] + (b[0] - a[0]) * s) + "," + Math.round(a[1] + (b[1] - a[1]) * s) + "," + Math.round(a[2] + (b[2] - a[2]) * s) + "," + alpha + ")";
+  }
+  function strokeGrad(ctx, W, seamRight, colA, colB, aFar, aSeam){
+    var g = seamRight ? ctx.createLinearGradient(0, 0, W, 0) : ctx.createLinearGradient(W, 0, 0, 0);
+    g.addColorStop(0, ramp(colA, colB, 0, aFar));
+    g.addColorStop(0.55, ramp(colA, colB, 0.55, aFar + (aSeam - aFar) * 0.55));
+    g.addColorStop(1, ramp(colA, colB, 1, aSeam));
+    return g;
+  }
+  function draw(u, T){
+    var cfg = u.cfg, ctx = u.ctx;
+    var w = u.host.clientWidth, h = u.host.clientHeight;
+    if (w < 2 || h < 2) return;
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    var W = Math.round(w * dpr), H = Math.round(h * dpr);
+    if (u.c.width !== W || u.c.height !== H) { u.c.width = W; u.c.height = H; }
+    ctx.globalCompositeOperation = "source-over";
+    /* background ramp (exact sampled stops) */
+    var g = ctx.createLinearGradient(0, 0, W, 0);
+    var stops = cfg.seamRight ? cfg.bg : cfg.bg.slice().reverse();
+    /* cfg.bg is far->seam; canvas left->right: cyan far is left (as-is), orange far is right (reverse) */
+    for (var i = 0; i < stops.length; i++) g.addColorStop(i / (stops.length - 1), stops[i]);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    /* vertical sheen + floor shadow (matches strip profile) */
+    var vg = ctx.createLinearGradient(0, 0, 0, H);
+    vg.addColorStop(0, "rgba(255,255,255,0.10)"); vg.addColorStop(0.20, "rgba(255,255,255,0)");
+    vg.addColorStop(0.84, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(0,0,0,0.30)");
+    ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+    /* hot bloom at the seam edge */
+    var sw = Math.max(12 * dpr, W * 0.06);
+    var sx = cfg.seamRight ? W - sw : sw;
+    var sg = ctx.createLinearGradient(cfg.seamRight ? W - sw : sw, 0, cfg.seamRight ? W : 0, 0);
+    sg.addColorStop(0, "rgba(" + cfg.hot + ",0)");
+    sg.addColorStop(1, "rgba(" + cfg.hot + ",0.5)");
+    ctx.fillStyle = sg; ctx.fillRect(cfg.seamRight ? W - sw : 0, 0, sw, H);
+    /* bolts — additive, gradient-ramped, never straight */
+    ctx.globalCompositeOperation = "lighter";
+    ctx.lineCap = "round"; ctx.lineJoin = "round";
+    var mid = H / 2, amp = H * 0.40;
+    for (var b = 0; b < u.bolts.length; b++) {
+      var bo = u.bolts[b];
+      var inten = (0.72 + 0.28 * bo.nf(T * 0.8 + b * 3)) * (bo.wisp ? 0.55 : 1);
+      var step = Math.max(6 * dpr, W / 130);
+      var pts = [];
+      for (var x = 0; x <= W + step; x += step) {
+        var uu = x / dpr;
+        /* one-way flow: noise field slides toward the seam on both sides */
+        var drift = cfg.flow * T * bo.spd;
+        var n1 = (bo.n1(uu * bo.f1 - drift * bo.f1) - 0.5) * 2;
+        var n2 = (bo.n2(uu * bo.f2 - drift * bo.f2 * 1.6 + 40) - 0.5) * 2;
+        var wave = Math.sin(uu * 0.045 + cfg.flow * T * 1.5 + bo.ph);
+        var off = amp * (0.58 * n1 + 0.28 * n2 * (bo.wisp ? 1.5 : 1) + 0.14 * wave);
+        if (off > amp) off = amp; if (off < -amp) off = -amp;
+        pts.push([x, mid + off]);
+      }
+      /* smooth path through midpoints */
+      var path = function(){
+        ctx.beginPath();
+        ctx.moveTo(pts[0][0], pts[0][1]);
+        for (var k = 1; k < pts.length - 1; k++) {
+          var mx = (pts[k][0] + pts[k + 1][0]) / 2, my = (pts[k][1] + pts[k + 1][1]) / 2;
+          ctx.quadraticCurveTo(pts[k][0], pts[k][1], mx, my);
+        }
+        ctx.stroke();
+      };
+      var lw = Math.max(1.1 * dpr, H * 0.05) * (bo.wisp ? 0.7 : 1);
+      ctx.strokeStyle = strokeGrad(ctx, W, cfg.seamRight, cfg.halo[0], cfg.halo[1], 0.04 * inten, 0.15 * inten);
+      ctx.lineWidth = lw * 6; path();
+      ctx.strokeStyle = strokeGrad(ctx, W, cfg.seamRight, cfg.halo[0], cfg.halo[1], 0.08 * inten, 0.3 * inten);
+      ctx.lineWidth = lw * 2.6; path();
+      ctx.strokeStyle = strokeGrad(ctx, W, cfg.seamRight, cfg.core[0], cfg.core[1], 0.3 * inten, 0.95 * inten);
+      ctx.lineWidth = lw; path();
+    }
+  }
+  function tick(ts){
+    var T = ts / 1000;
+    for (var i = 0; i < units.length; i++) {
+      if (units[i].host.offsetParent !== null) draw(units[i], T);
+    }
+    requestAnimationFrame(tick);
+  }
+  function boot(){
+    var tv = document.querySelector("#tv .tv-wp .bar");
+    if (tv) { addCanvas(tv.querySelector(".away"), "cyan", 3); addCanvas(tv.querySelector(".home"), "orange", 11); tv.classList.add("wpc-on"); }
+    var ph = document.querySelector("#phone .pwp-bar");
+    if (ph) { addCanvas(ph.querySelector(".pwp-away"), "cyan", 23); addCanvas(ph.querySelector(".pwp-home"), "orange", 31); ph.classList.add("wpc-on"); }
+    if (units.length) requestAnimationFrame(tick);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
+})();
 </script>
 </body>
 </html>
