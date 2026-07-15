@@ -1123,6 +1123,20 @@ canvas.wpc{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 
 /* ===== QR UNCOVERED — nothing overlaps the QR: the tight corner brackets are gone (outer box brackets stay). ===== */
 #tv .jb-qr-wrap .qc{display:none!important}
+
+/* ===== TOPROW CENTER BAND — the user's crop is authoritative: lighter teal band behind [score | FIRST PITCH | score]
+   (full header height, sharp edges, cyan top glow), cyan-halo digits, inset fading dividers, #b4daff pill.
+   Band element .sb-band is positioned by JS (it spans three separately-parented elements). ===== */
+#tv .tv-score .sb-band{position:absolute;top:0;bottom:0;z-index:0;pointer-events:none;
+  background:radial-gradient(42% 30px at 50% 0%,rgba(56,150,190,.4),transparent 75%),linear-gradient(180deg,#1b3c4d 0%,#17323f 34%,#132b38 100%);
+  box-shadow:inset 0 1px 0 rgba(120,210,245,.35),inset 0 -1px 0 rgba(0,0,0,.3),0 0 22px rgba(30,110,150,.18)}
+#tv .tv-score .sb-center{position:relative;z-index:1;border-left:none;border-right:none}
+#tv .tv-score .sb-center::before,#tv .tv-score .sb-center::after{content:"";position:absolute;top:11%;bottom:11%;width:1.5px;background:linear-gradient(180deg,transparent,rgba(190,216,235,.38) 18%,rgba(190,216,235,.38) 82%,transparent)}
+#tv .tv-score .sb-center::before{left:0}
+#tv .tv-score .sb-center::after{right:0}
+#tv .tv-score .sb-score,#tv .tv-score .sb-side.home .sb-score{text-shadow:0 0 14px rgba(110,215,255,.5),0 0 36px rgba(80,180,235,.32),0 2px 5px rgba(0,0,0,.45)}
+#tv .tv-score .sb-center .inn{letter-spacing:2.5px;font-size:clamp(18px,2.6vmin,36px)}
+#tv .tv-score .sb-center .st.pre{background:#b4daff;color:#00021f;padding:6px 22px;font-size:clamp(13px,1.7vmin,22px)}
 </style>
 </head>
 <body>
@@ -2281,6 +2295,30 @@ boot();
     host.insertBefore(cv, host.firstChild);
     ctx = cv.getContext("2d");
     requestAnimationFrame(tick);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
+})();
+(function(){
+  /* TOPROW CENTER BAND positioner — keeps .sb-band spanning awayScore..homeScore */
+  function boot(){
+    var box = document.querySelector("#tv .tv-score");
+    var a = document.getElementById("awScore"), h = document.getElementById("hmScore");
+    if (!box || !a || !h || box.querySelector(".sb-band")) return;
+    var band = document.createElement("div"); band.className = "sb-band";
+    box.insertBefore(band, box.firstChild);
+    function upd(){
+      var r = box.getBoundingClientRect();
+      if (r.width < 10) return;
+      var ra = a.getBoundingClientRect(), rh = h.getBoundingClientRect();
+      var pad = Math.min(20, r.width * 0.014);
+      var L = Math.max(0, ra.left - r.left - pad);
+      var Rt = Math.min(r.width, rh.right - r.left + pad);
+      band.style.left = L + "px";
+      band.style.width = Math.max(0, Rt - L) + "px";
+    }
+    upd();
+    setInterval(upd, 400);
+    window.addEventListener("resize", upd);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();
