@@ -1128,8 +1128,12 @@ canvas.wpc{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
    (full header height, sharp edges, cyan top glow), cyan-halo digits, inset fading dividers, #b4daff pill.
    Band element .sb-band is positioned by JS (it spans three separately-parented elements). ===== */
 #tv .tv-score .sb-band{position:absolute;top:0;bottom:0;z-index:0;pointer-events:none;
-  background:radial-gradient(42% 30px at 50% 0%,rgba(56,150,190,.4),transparent 75%),linear-gradient(180deg,#1b3c4d 0%,#17323f 34%,#132b38 100%);
-  box-shadow:inset 0 1px 0 rgba(120,210,245,.35),inset 0 -1px 0 rgba(0,0,0,.3),0 0 22px rgba(30,110,150,.18)}
+  /* v2 BLEND: same navy family as the header panel (#12283a..#0c1c29), just lifted — and the sides FADE
+     into the panel via a mask instead of cutting a sharp block */
+  background:radial-gradient(46% 32px at 50% 0%,rgba(96,168,220,.32),transparent 75%),linear-gradient(180deg,#1e3a55 0%,#182f47 36%,#13273c 100%);
+  box-shadow:inset 0 1px 0 rgba(140,200,245,.28),inset 0 -1px 0 rgba(0,0,0,.25);
+  -webkit-mask:linear-gradient(90deg,transparent 0%,#fff 16%,#fff 84%,transparent 100%);
+  mask:linear-gradient(90deg,transparent 0%,#fff 16%,#fff 84%,transparent 100%)}
 #tv .tv-score .sb-center{position:relative;z-index:1;border-left:none;border-right:none}
 #tv .tv-score .sb-center::before,#tv .tv-score .sb-center::after{content:"";position:absolute;top:11%;bottom:11%;width:1.5px;background:linear-gradient(180deg,transparent,rgba(190,216,235,.38) 18%,rgba(190,216,235,.38) 82%,transparent)}
 #tv .tv-score .sb-center::before{left:0}
