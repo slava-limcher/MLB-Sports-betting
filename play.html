@@ -1468,10 +1468,15 @@ async function ensureNames(ids){
 }
 function normProps(raw){
   raw=raw||[]; const seen=new Set(), out=[];
-  for(const p of raw){ const key=p.player_id+"|"+p.prop_type; if(seen.has(key)) continue; seen.add(key);
+  for(const p of raw){ const key=p.player_id+"|"+p.prop_type; if(seen.has(key)) continue;
+    // usable price: straight markets carry market.odds; over/under markets carry over_odds
+    // (cards read "prop 0.5+" = the over side). Unpriced rows don't consume one of the 10 slots.
+    const m=p.market||{}; const odds=(m.odds!=null)?m.odds:(m.over_odds!=null?m.over_odds:null);
+    if(odds==null) continue;
+    seen.add(key);
     out.push({ key, playerId:p.player_id, name:PNAME[p.player_id]||("#"+p.player_id),
       prop:(p.prop_type||"").replace(/_/g," "), line:parseFloat(p.line_value),
-      odds:(p.market&&p.market.odds)!=null?p.market.odds:null });
+      odds });
     if(out.length>=10) break;
   }
   return out;
